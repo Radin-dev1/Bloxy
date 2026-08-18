@@ -11,6 +11,9 @@ The deployed GitHub Pages website is the standalone marketing page in `landing/i
 - Pairing sessions expire after one hour and permit at most 40 generation requests.
 - The plugin accepts only allowlisted instance classes and blocks dangerous Luau patterns.
 - Generated builds require an explicit Apply click and create Studio undo waypoints.
+- One Bloxy Bit represents one cent of metered AI usage. Pro renewals grant 2,200 Bits.
+- Every charge is enforced by the backend and recorded in an append-only ledger. Failed AI requests are refunded automatically.
+- Current prices: blueprint 1 Bit, thumbnail 4 Bits, basic 3D 10 Bits, textured 3D 30 Bits, and premium 3D 50 Bits.
 
 ## Setup
 
