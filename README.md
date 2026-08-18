@@ -2,7 +2,7 @@
 
 Bloxy is a website-based AI Roblox game builder. The website creates a short pairing code; the user enters it in the Roblox Studio plugin; Gemini generates a declarative build blueprint; and the plugin previews every action before the user applies it.
 
-The standalone marketing page is in `landing/index.html`. It uses plain HTML, CSS, and JavaScript with no build step and can be opened directly in a browser.
+The deployed GitHub Pages website is the standalone marketing page in `landing/index.html`. It uses plain HTML, CSS, and JavaScript with no build step. `.github/workflows/pages.yml` publishes that folder as the live Bloxy website on every relevant push.
 
 ## Safety and cost controls
 
