@@ -1,0 +1,36 @@
+import { env } from "cloudflare:workers";
+
+export type BuildAction = { id: string; type: "create_instance" | "create_script"; className?: string; name: string; parent: string; properties?: Record<string, string | number | boolean>; source?: string; summary: string };
+
+const schema = [
+  `CREATE TABLE IF NOT EXISTS bridge_sessions (id TEXT PRIMARY KEY, pair_code TEXT UNIQUE NOT NULL, web_token_hash TEXT NOT NULL, plugin_token_hash TEXT, status TEXT NOT NULL DEFAULT 'waiting', request_count INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL, expires_at INTEGER NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS build_jobs (id TEXT PRIMARY KEY, session_id TEXT NOT NULL, prompt TEXT NOT NULL, actions_json TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending', created_at INTEGER NOT NULL, FOREIGN KEY(session_id) REFERENCES bridge_sessions(id))`,
+  `CREATE INDEX IF NOT EXISTS build_jobs_session_idx ON build_jobs(session_id, status, created_at)`,
+];
+
+export async function db() {
+  const database = env.DB as D1Database;
+  if (!database) throw new Error("Bridge database is unavailable");
+  await database.batch(schema.map((sql) => database.prepare(sql)));
+  return database;
+}
+
+export function token(bytes = 24) { const data = crypto.getRandomValues(new Uint8Array(bytes)); return Array.from(data, b => b.toString(16).padStart(2,"0")).join(""); }
+export function code() { const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; const data=crypto.getRandomValues(new Uint8Array(8)); return `${Array.from(data.slice(0,4),b=>chars[b%chars.length]).join("")}-${Array.from(data.slice(4),b=>chars[b%chars.length]).join("")}`; }
+export async function digest(value:string){ const bytes=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(value)); return Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,"0")).join(""); }
+export function bearer(request:Request){ const value=request.headers.get("authorization")||""; return value.startsWith("Bearer ")?value.slice(7):""; }
+export function json(data:unknown,status=200){ return Response.json(data,{status,headers:{"Cache-Control":"no-store"}}); }
+
+export async function generateBlueprint(prompt:string):Promise<BuildAction[]> {
+  const key=(env as unknown as {GEMINI_API_KEY?:string}).GEMINI_API_KEY;
+  if(!key) throw new Error("GEMINI_API_KEY is not configured");
+  const system=`You are ForgeLink, a Roblox Studio build planner. Return only a JSON array of at most 12 declarative actions. Allowed types: create_instance and create_script. Allowed instance classes: Folder, Model, Part, SpawnLocation, ScreenGui, Frame, TextLabel, TextButton, UIListLayout, UICorner, UIStroke. Every action requires id, type, name, parent, summary. create_instance may include className and simple properties. create_script requires source and its parent must be ServerScriptService, ReplicatedStorage, StarterPlayer.StarterPlayerScripts, or StarterGui. Use safe server-authoritative Luau. Never use require(assetId), loadstring, HttpGet, external URLs, obfuscation, purchases, or destructive operations.`;
+  const response=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify({system_instruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{temperature:.25,maxOutputTokens:2048,responseMimeType:"application/json"}})});
+  if(!response.ok) throw new Error(`Gemini request failed (${response.status})`);
+  const payload=await response.json() as {candidates?:Array<{content?:{parts?:Array<{text?:string}>}}>};
+  const raw=payload.candidates?.[0]?.content?.parts?.[0]?.text;
+  if(!raw) throw new Error("Gemini returned no blueprint");
+  const actions=JSON.parse(raw) as BuildAction[];
+  if(!Array.isArray(actions)||actions.length>12) throw new Error("Gemini returned an invalid blueprint");
+  return actions;
+}

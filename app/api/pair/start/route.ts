@@ -1,0 +1,2 @@
+import {code,db,digest,json,token} from "../../../../lib/bridge";
+export async function POST(){const database=await db();const id=crypto.randomUUID(),pairCode=code(),webToken=token(),now=Date.now();await database.prepare("INSERT INTO bridge_sessions (id,pair_code,web_token_hash,status,created_at,expires_at) VALUES (?,?,?,?,?,?)").bind(id,pairCode,await digest(webToken),"waiting",now,now+3600000).run();return json({pairCode,webToken,expiresIn:3600});}
