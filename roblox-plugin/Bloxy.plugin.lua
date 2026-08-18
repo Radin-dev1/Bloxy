@@ -1,15 +1,15 @@
--- ForgeLink Studio Plugin
+-- Bloxy Studio Plugin
 -- Replace WEBSITE_URL after deployment, then save this script as a local plugin.
 
 local HttpService = game:GetService("HttpService")
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
 
-local WEBSITE_URL = "https://YOUR-FORGELINK-SITE.example"
-local toolbar = plugin:CreateToolbar("ForgeLink")
-local openButton = toolbar:CreateButton("ForgeLink", "Pair Studio with the ForgeLink website", "")
+local WEBSITE_URL = "https://YOUR-BLOXY-SITE.example"
+local toolbar = plugin:CreateToolbar("Bloxy")
+local openButton = toolbar:CreateButton("Bloxy", "Pair Studio with the Bloxy website", "")
 local widgetInfo = DockWidgetPluginGuiInfo.new(Enum.InitialDockState.Right, false, false, 390, 560, 320, 430)
-local widget = plugin:CreateDockWidgetPluginGui("ForgeLinkBuilder", widgetInfo)
-widget.Title = "ForgeLink · AI Builder"
+local widget = plugin:CreateDockWidgetPluginGui("BloxyBuilder", widgetInfo)
+widget.Title = "Bloxy · AI Builder"
 
 local colors = { bg=Color3.fromRGB(8,11,13), panel=Color3.fromRGB(16,21,24), line=Color3.fromRGB(41,50,56), text=Color3.fromRGB(237,242,241), muted=Color3.fromRGB(130,144,151), yellow=Color3.fromRGB(242,201,76), cyan=Color3.fromRGB(110,231,224), red=Color3.fromRGB(228,111,69) }
 local function new(class, props, parent)
@@ -22,7 +22,7 @@ end
 local root=new("Frame",{Size=UDim2.fromScale(1,1),BackgroundColor3=colors.bg,BorderSizePixel=0},widget)
 new("UIPadding",{PaddingTop=UDim.new(0,18),PaddingBottom=UDim.new(0,18),PaddingLeft=UDim.new(0,18),PaddingRight=UDim.new(0,18)},root)
 local stack=new("UIListLayout",{Padding=UDim.new(0,12),SortOrder=Enum.SortOrder.LayoutOrder},root)
-local title=new("TextLabel",{LayoutOrder=1,Size=UDim2.new(1,0,0,34),BackgroundTransparency=1,Text="FORGE  LINK",TextColor3=colors.text,Font=Enum.Font.GothamBlack,TextSize=22,TextXAlignment=Enum.TextXAlignment.Left},root)
+local title=new("TextLabel",{LayoutOrder=1,Size=UDim2.new(1,0,0,34),BackgroundTransparency=1,Text="BLOXY",TextColor3=colors.text,Font=Enum.Font.GothamBlack,TextSize=22,TextXAlignment=Enum.TextXAlignment.Left},root)
 local status=new("TextLabel",{LayoutOrder=2,Size=UDim2.new(1,0,0,25),BackgroundColor3=colors.panel,BorderColor3=colors.line,Text="  ●  WAITING FOR PAIRING CODE",TextColor3=colors.red,Font=Enum.Font.Code,TextSize=11,TextXAlignment=Enum.TextXAlignment.Left},root)
 local codeBox=new("TextBox",{LayoutOrder=3,Size=UDim2.new(1,0,0,48),BackgroundColor3=colors.panel,BorderColor3=colors.line,PlaceholderText="ABCD-1234",Text="",TextColor3=colors.text,PlaceholderColor3=colors.muted,Font=Enum.Font.Code,TextSize=22,ClearTextOnFocus=false},root)
 local pairButton=new("TextButton",{LayoutOrder=4,Size=UDim2.new(1,0,0,42),BackgroundColor3=colors.yellow,BorderSizePixel=0,Text="PAIR WEBSITE",TextColor3=colors.bg,Font=Enum.Font.GothamBold,TextSize=13},root)
@@ -31,7 +31,7 @@ local preview=new("TextLabel",{LayoutOrder=6,Size=UDim2.new(1,0,1,-280),Backgrou
 new("UIPadding",{PaddingTop=UDim.new(0,13),PaddingLeft=UDim.new(0,13),PaddingRight=UDim.new(0,13)},preview)
 local applyButton=new("TextButton",{LayoutOrder=7,Size=UDim2.new(1,0,0,44),BackgroundColor3=colors.line,BorderSizePixel=0,Text="WAITING FOR BLUEPRINT",TextColor3=colors.muted,Font=Enum.Font.GothamBold,TextSize=13,AutoButtonColor=false,Active=false},root)
 
-local pluginToken = plugin:GetSetting("ForgeLinkPluginToken")
+local pluginToken = plugin:GetSetting("BloxyPluginToken")
 local currentJob = nil
 local polling = false
 local allowedClasses = {Folder=true,Model=true,Part=true,SpawnLocation=true,ScreenGui=true,Frame=true,TextLabel=true,TextButton=true,UIListLayout=true,UICorner=true,UIStroke=true}
@@ -41,7 +41,7 @@ local function request(path, method, body, auth)
 	local headers={ ["Content-Type"]="application/json" }
 	if auth then headers.Authorization="Bearer "..auth end
 	local response=HttpService:RequestAsync({Url=WEBSITE_URL..path,Method=method or "GET",Headers=headers,Body=body and HttpService:JSONEncode(body) or nil})
-	if not response.Success then error("ForgeLink request failed: "..response.StatusCode) end
+	if not response.Success then error("Bloxy request failed: "..response.StatusCode) end
 	return HttpService:JSONDecode(response.Body)
 end
 
@@ -70,7 +70,7 @@ end
 
 local function applyJob()
 	if not currentJob then return end
-	ChangeHistoryService:SetWaypoint("Before ForgeLink build")
+	ChangeHistoryService:SetWaypoint("Before Bloxy build")
 	for _,action in ipairs(currentJob.actions) do
 		local parent=resolveParent(action.parent)
 		if not parent then error("Parent not found: "..tostring(action.parent)) end
@@ -86,7 +86,7 @@ local function applyJob()
 			local scriptObject=Instance.new(className); scriptObject.Name=action.name; scriptObject.Source=action.source; scriptObject.Parent=parent
 		end
 	end
-	ChangeHistoryService:SetWaypoint("ForgeLink build applied")
+	ChangeHistoryService:SetWaypoint("Bloxy build applied")
 	request("/api/plugin/complete","POST",{jobId=currentJob.id,status="applied"},pluginToken)
 	preview.Text="Build applied. Use Studio Undo to revert it."; currentJob=nil; applyButton.Active=false; applyButton.AutoButtonColor=false; applyButton.Text="WAITING FOR BLUEPRINT"; applyButton.BackgroundColor3=colors.line
 end
@@ -106,7 +106,7 @@ end
 
 pairButton.MouseButton1Click:Connect(function()
 	local ok,result=pcall(request,"/api/plugin/pair","POST",{code=codeBox.Text})
-	if ok then pluginToken=result.pluginToken;plugin:SetSetting("ForgeLinkPluginToken",pluginToken);status.Text="  ●  WEBSITE CONNECTED";status.TextColor3=colors.cyan;codeBox.Visible=false;pairButton.Visible=false;poll() else status.Text="  ●  PAIRING FAILED";status.TextColor3=colors.red end
+	if ok then pluginToken=result.pluginToken;plugin:SetSetting("BloxyPluginToken",pluginToken);status.Text="  ●  WEBSITE CONNECTED";status.TextColor3=colors.cyan;codeBox.Visible=false;pairButton.Visible=false;poll() else status.Text="  ●  PAIRING FAILED";status.TextColor3=colors.red end
 end)
 applyButton.MouseButton1Click:Connect(function() local ok,err=pcall(applyJob);if not ok then preview.Text="Build stopped safely:\n"..tostring(err) end end)
 openButton.Click:Connect(function() widget.Enabled=not widget.Enabled end)

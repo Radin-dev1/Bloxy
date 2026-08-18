@@ -1,6 +1,8 @@
-# ForgeLink
+# Bloxy
 
-ForgeLink is a website-based AI Roblox game builder. The website creates a short pairing code; the user enters it in the Roblox Studio plugin; Gemini generates a declarative build blueprint; and the plugin previews every action before the user applies it.
+Bloxy is a website-based AI Roblox game builder. The website creates a short pairing code; the user enters it in the Roblox Studio plugin; Gemini generates a declarative build blueprint; and the plugin previews every action before the user applies it.
+
+The standalone marketing page is in `landing/index.html`. It uses plain HTML, CSS, and JavaScript with no build step and can be opened directly in a browser.
 
 ## Safety and cost controls
 
@@ -13,7 +15,7 @@ ForgeLink is a website-based AI Roblox game builder. The website creates a short
 ## Setup
 
 1. Deploy the website and add `GEMINI_API_KEY` as a server secret.
-2. Replace `WEBSITE_URL` in `roblox-plugin/ForgeLink.plugin.lua` with the deployed HTTPS address.
+2. Replace `WEBSITE_URL` in `roblox-plugin/Bloxy.plugin.lua` with the deployed HTTPS address.
 3. Install the Luau file as a local Roblox Studio plugin.
 4. Enable **Allow HTTP Requests** in Studio's Game Settings.
 5. Open the website, enter its pairing code in the plugin, and review builds before applying them.
@@ -24,4 +26,4 @@ The plugin is a Studio development tool. Do not place it inside a published Robl
 
 `reference-assets/` may contain locally supplied Roblox rig `.blend` files and face decal PNGs. It is intentionally excluded from Git because the supplied rig pack prohibits redistribution. The files are never uploaded automatically.
 
-There is no default rig or face. For every thumbnail, ForgeLink analyzes the requested genre, character role, emotion, pose, scene, headline, and composition; ranks the private rig and face library; and proposes the best matching references. The user can override either recommendation before generation. Only the two approved references are sent for that request, and the face remains a flat decal rather than being redrawn as modeled geometry.
+There is no default rig or face. For every thumbnail, Bloxy analyzes the requested genre, character role, emotion, pose, scene, headline, and composition; ranks the private rig and face library; and proposes the best matching references. The user can override either recommendation before generation. Only the two approved references are sent for that request, and the face remains a flat decal rather than being redrawn as modeled geometry.

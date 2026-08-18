@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Bloxy makes Roblox thumbnails that look like real Studio renders.">
+  <title>Bloxy — AI thumbnails that don't look AI</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="nav" aria-label="Main navigation">
+    <a class="logo" href="#top"><span>B</span>Bloxy</a>
+    <div class="nav-links"><a href="#gallery">Gallery</a><a href="#prompt">Prompt library</a><a href="#pricing">Pricing</a></div>
+    <div class="nav-actions"><a href="#signin">Sign in</a><a class="button dark compact" href="#start">Start free</a></div>
+  </nav>
+
+  <main id="top">
+    <section class="hero wrap">
+      <div class="hero-copy reveal">
+        <span class="chip red">For Roblox creators</span>
+        <h1>AI thumbnails that don't look AI.</h1>
+        <p class="hero-sub">Type a scene, pick a face, ship a thumbnail Roblox creators can't tell wasn't shot in Studio.</p>
+        <div class="cta-row"><a class="button dark" href="#start">Start generating →</a><a class="underlink" href="#gallery">See the gallery</a></div>
+        <p class="proof"><strong>0</strong> thumbnails generated this week — be the first.</p>
+      </div>
+      <div class="head-stage reveal" aria-label="Rotating Roblox face preview">
+        <div class="head" id="faceHead">
+          <img class="face active" src="faces/Awesome Face.png" alt="Awesome Face decal">
+          <img class="face" src="faces/Absolutely Shocked.png" alt="Absolutely Shocked decal">
+          <img class="face" src="faces/XD 2.0.png" alt="XD 2.0 decal">
+          <img class="face" src="faces/ZOMG.png" alt="ZOMG decal">
+          <img class="face" src="faces/Winning Smile.png" alt="Winning Smile decal">
+          <img class="face" src="faces/Bacon Face.png" alt="Bacon Face decal">
+          <img class="face" src="faces/Beast Mode.png" alt="Beast Mode decal">
+          <img class="face" src="faces/Bling.png" alt="Bling decal">
+        </div>
+        <p>382 expressions. One stays right for your scene.</p>
+      </div>
+    </section>
+
+    <section class="comparison" id="gallery">
+      <div class="wrap"><div class="section-intro light reveal"><span class="kicker">The eye test</span><h2>Roblox players notice the difference.</h2></div>
+        <div class="compare-grid">
+          <article class="compare-card reveal"><div class="mock mid"><div class="mock-head"><span>AI</span></div><b class="mark bad">×</b></div><h3>Midjourney</h3><p>Turns blocky rigs into glossy characters with modeled faces.</p></article>
+          <article class="compare-card reveal"><div class="mock dalle"><div class="mock-head"><span>3D</span></div><b class="mark bad">×</b></div><h3>DALL-E</h3><p>Gets the scene, then misses Roblox geometry and lighting.</p></article>
+          <article class="compare-card reveal"><div class="mock bloxy"><div class="roblox-head"><img src="faces/Absolutely Shocked.png" alt="Flat shocked face decal"></div><b class="mark good">✓</b></div><h3>Bloxy</h3><p>Flat decals, R15 proportions, and Future lighting stay locked.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="features wrap">
+      <div class="section-intro reveal"><span class="kicker">Built for the thumbnail grind</span><h2>The details creators usually fix by hand.</h2></div>
+      <div class="bento">
+        <article class="feature big stamped reveal"><span>DECAL LOCK</span><h3>Face decals stay flat</h3><p>The shocked face stays printed on the head. No modeled mouth, fake teeth, or human nose.</p><img src="faces/Absolutely Shocked.png" alt="Shocked face decal"></article>
+        <article class="feature reveal"><span>LIGHTING</span><h3>Future lighting, locked</h3><p>Warm key, cool fill, clean rim. The scene reads like Studio.</p><div class="swatches"><i></i><i></i><i></i></div></article>
+        <article class="feature reveal"><span>LIBRARY</span><h3>382 official-style faces</h3><p>Pick by mood or let Bloxy rank expressions for the headline.</p><strong class="number">382</strong></article>
+        <article class="feature reveal"><span>RIGS</span><h3>Every R15 rig, ready</h3><p>Blocky, 2.0, boy, girl, man, woman, or superhero—chosen per scene.</p><div class="rig-placeholder">RIG RENDERS<br>COMING NEXT</div></article>
+        <article class="feature big reveal"><span>PROMPTING</span><h3>Prompt in plain English</h3><p>Describe the moment like you'd brief a thumbnail artist. Bloxy handles camera, lighting, decal rules, and negatives.</p><div class="mini-prompt">A blocky hero escaping a collapsing lava tower, shocked face, coins in the air…</div></article>
+        <article class="feature reveal"><span>WORKFLOW</span><h3>Batch export for a series</h3><p>Keep the same visual language across an update, challenge, or upload run.</p><div class="batch"><i>01</i><i>02</i><i>03</i></div></article>
+      </div>
+    </section>
+
+    <section class="prompt-section" id="prompt"><div class="wrap prompt-grid">
+      <div class="section-intro reveal"><span class="kicker">Under the hood</span><h2>The prompt system doing the work.</h2><p>One structured brief locks Roblox geometry, decal behavior, composition, and lighting before generation starts.</p></div>
+      <pre class="prompt-code reveal"><code><span class="comment">// CHARACTER CONSTRUCTION</span>
+Body: use <span class="variable">[IMG_1]</span> as exact R15 rig reference
+Face: project <span class="variable">[IMG_2]</span> as a FLAT 2D decal
+Materials: SmoothPlastic, subtle sheen
+
+<span class="section">## COMPOSITION</span>
+Aspect: <span class="variable">16:9 · 1280×720</span>
+Camera: 24mm, 3/4 angle, 15° low tilt
+Left third: calm space for <span class="variable">{HEADLINE}</span>
+
+<span class="section">## HARD NEGATIVES</span>
+no human anatomy, modeled face, anime,
+Fortnite, Lego, or painted illustration</code></pre>
+    </div></section>
+
+    <section class="pricing wrap" id="pricing">
+      <div class="section-intro center reveal"><span class="kicker">Start without guessing</span><h2>Pick the pace you ship at.</h2></div>
+      <div class="price-grid">
+        <article class="price reveal"><span>FREE</span><h3>$0</h3><p>Try the prompt builder and test your first thumbnail direction.</p><ul><li>Starter generations</li><li>Face library access</li><li>PNG export</li></ul><a class="button outline" href="#start">Start free</a></article>
+        <article class="price popular reveal"><span class="chip yellow">Most creators pick this</span><h4>PRO</h4><h3>Creator pace</h3><p>For weekly uploads, game updates, and thumbnails that need options.</p><ul><li>More monthly generations</li><li>Batch variations</li><li>Prompt history</li></ul><a class="button dark" href="#start">Choose Pro</a></article>
+        <article class="price reveal"><span>STUDIO</span><h3>Team pace</h3><p>Shared visual systems for teams shipping several experiences.</p><ul><li>Shared libraries</li><li>Series presets</li><li>Priority queue</li></ul><a class="button outline" href="#start">Talk to us</a></article>
+      </div>
+    </section>
+
+    <section class="final-cta" id="start"><div class="wrap reveal"><span class="chip yellow">Your next thumbnail</span><h2>Make it look like Roblox.<br>Not like a model guessing Roblox.</h2><a class="button cream" href="../">Open Bloxy →</a></div></section>
+  </main>
+
+  <footer><div class="wrap footer-grid"><div><a class="logo light-logo" href="#top"><span>B</span>Bloxy</a><p>Thumbnails that respect the rigs, faces, and lighting Roblox creators actually use.</p></div><div><b>Product</b><a href="#gallery">Gallery</a><a href="#prompt">Prompt library</a><a href="#pricing">Pricing</a></div><div><b>Resources</b><a href="#">Guides</a><a href="#">Examples</a><a href="#">Status</a></div><div><b>Company</b><a href="#">About</a><a href="#">Contact</a></div><div><b>Legal</b><a href="#">Terms</a><a href="#">Privacy</a></div></div><div class="wrap disclaimer">Not affiliated with Roblox Corporation.</div></footer>
+
+  <script>
+    const faces=[...document.querySelectorAll('.face')]; let faceIndex=0;
+    setInterval(()=>{faces[faceIndex].classList.remove('active');faceIndex=(faceIndex+1)%faces.length;faces[faceIndex].classList.add('active')},2400);
+    const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('shown');observer.unobserve(entry.target)}}),{threshold:.12});
+    document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+    addEventListener('scroll',()=>document.querySelector('.nav').classList.toggle('scrolled',scrollY>8),{passive:true});
+  </script>
+</body>
+</html>
