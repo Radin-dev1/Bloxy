@@ -1,7 +1,7 @@
 .tree p { margin: 1px -8px; padding: 5px 8px; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
 .tree .child { padding-left: 27px; }
 .chevron { width: 10px; color: #89949a; }
-.class-icon { display: inline-block; flex: 0 0 16px; width: 16px; height: 16px; background-image: url('assets/ClassImages.png'); background-repeat: no-repeat; }
+.class-icon { display: inline-block; flex: 0 0 16px; width: 16px; height: 16px; background-repeat: no-repeat; background-position: center; background-size: 16px 16px; }
 #classPicker { width: min(580px, calc(100% - 30px)); height: min(680px, calc(100% - 40px)); text-align: left; padding: 26px; overflow: hidden; }
 #classPicker h2 { margin: 7px 0 15px; }
 #classPicker > #closeClasses { position: absolute; right: 10px; top: 8px; border: 0; background: none; font-size: 25px; }

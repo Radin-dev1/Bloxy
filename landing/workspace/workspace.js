@@ -23,7 +23,7 @@ $('#home').onclick=()=>{camera.position.set(1450,1050,1450);controls.target.set(
 const classPicker=$('#classPicker'),classList=$('#classList'),classSearch=$('#classSearch');
 let studioClasses=[];
 const iconMarkup=className=>`<i class="class-icon" data-class="${className}"></i>`;
-const applyClassIcons=root=>root.querySelectorAll('.class-icon').forEach(icon=>{const item=studioClasses.find(entry=>entry.name===icon.dataset.class);if(item)icon.style.backgroundPosition=`-${item.icon*16}px 0`});
+const applyClassIcons=root=>root.querySelectorAll('.class-icon').forEach(icon=>{const name=encodeURIComponent(icon.dataset.class||'Service');icon.style.backgroundImage=`url('assets/class-icons/${name}.png'),url('assets/class-icons/Service.png')`});
 function renderClasses(query=''){
   const search=query.trim().toLowerCase();
   const matches=studioClasses.filter(item=>!search||item.name.toLowerCase().includes(search)).slice(0,300);
