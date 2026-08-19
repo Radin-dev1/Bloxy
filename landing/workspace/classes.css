@@ -12,3 +12,22 @@
 .class-list button:hover,.class-list button:focus { background: #263237; color: var(--cyan); outline: 0; }
 .class-list em { margin-left: auto; color: #67747a; font: normal 9px JetBrains Mono; }
 .class-list > p { padding: 12px; color: var(--muted); font-size: 11px; }
+.studio-tools { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; padding: 4px; background: rgba(24,28,31,.94); border: 1px solid #444b50; border-radius: 7px; box-shadow: 0 5px 18px #0005; }
+.tool-group { display: flex; gap: 2px; padding: 0 4px; border-right: 1px solid #41474b; }
+.tool-group:last-child { border: 0; }
+.studio-tools button { min-width: 43px; height: 42px; border: 0; border-radius: 4px; background: transparent; color: #d6dadd; font-size: 17px; display: grid; place-items: center; padding: 3px 7px; }
+.studio-tools button small { display: block; font: 8px Inter,sans-serif; color: #8e989d; }
+.studio-tools button:hover,.studio-tools .active { background: #333a3f; color: #fff; }
+.studio-tools .active { box-shadow: inset 0 -2px var(--cyan); }
+.studio-tools .play { color: #6fe48c; }
+.studio-tools .play.running { background: #7d2d2d; color: #fff; box-shadow: inset 0 -2px #ff766f; }
+.studio-tools .insert { color: var(--yellow); }
+.radial { --rx: 50%; --ry: 50%; position: absolute; left: var(--rx); top: var(--ry); width: 190px; height: 190px; transform: translate(-50%,-50%) scale(.8); border-radius: 50%; opacity: 0; pointer-events: none; transition: .14s ease; filter: drop-shadow(0 12px 25px #0008); }
+.radial.open { opacity: 1; pointer-events: auto; transform: translate(-50%,-50%) scale(1); }
+.radial b { position: absolute; inset: 66px; display: grid; place-items: center; border-radius: 50%; background: #11171a; border: 1px solid #536067; color: var(--cyan); font-size: 22px; }
+.radial button { position: absolute; width: 72px; height: 42px; border: 1px solid #4b565c; border-radius: 21px; background: #171e22ed; color: #e6eaec; font-size: 10px; }
+.radial button:hover { background: var(--cyan); border-color: var(--cyan); color: #091012; }
+.radial button:nth-child(1) { left: 59px; top: 4px; }.radial button:nth-child(2) { right: 0; top: 73px; }.radial button:nth-child(3) { left: 59px; bottom: 4px; }.radial button:nth-child(4) { left: 0; top: 73px; }
+.axis { position: absolute; right: 17px; top: 16px; width: 58px; height: 58px; border-radius: 50%; background: #11181b99; border: 1px solid #526067; font: 9px JetBrains Mono; }
+.axis span { position: absolute; font-weight: 700; }.axis .y { color: #72dc77; left: 25px; top: 3px; }.axis .x { color: #ff6f67; right: 5px; bottom: 9px; }.axis .z { color: #68aaff; left: 6px; bottom: 9px; }
+@media (min-width: 1180px) { main { grid-template-columns: 58px 292px minmax(520px,1fr) 248px; } }
