@@ -19,7 +19,37 @@ new ResizeObserver(()=>{const w=mount.clientWidth,h=mount.clientHeight;camera.as
 
 const $=selector=>document.querySelector(selector),toast=message=>{const t=$('#toast');t.textContent=message;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700)};
 $('#home').onclick=()=>{camera.position.set(1450,1050,1450);controls.target.set(0,18,0)};$('#grid').onclick=()=>grid.visible=!grid.visible;
-$('#add').onclick=()=>{const part=new THREE.Mesh(new THREE.BoxGeometry(160,160,160),new THREE.MeshStandardMaterial({color:0xa3c76d,roughness:.72}));part.position.set((Math.random()-.5)*700,96,(Math.random()-.5)*700);part.castShadow=true;part.receiveShadow=true;scene.add(part);toast('Part added')};
+
+const classPicker=$('#classPicker'),classList=$('#classList'),classSearch=$('#classSearch');
+let studioClasses=[];
+const iconMarkup=className=>`<i class="class-icon" data-class="${className}"></i>`;
+const applyClassIcons=root=>root.querySelectorAll('.class-icon').forEach(icon=>{const item=studioClasses.find(entry=>entry.name===icon.dataset.class);if(item)icon.style.backgroundPosition=`-${item.icon*16}px 0`});
+function renderClasses(query=''){
+  const search=query.trim().toLowerCase();
+  const matches=studioClasses.filter(item=>!search||item.name.toLowerCase().includes(search)).slice(0,300);
+  classList.innerHTML=matches.length?matches.map(item=>`<button data-name="${item.name}">${iconMarkup(item.name)}<span>${item.name}</span><em>${item.category}</em></button>`).join(''):'<p>No matching Roblox classes.</p>';
+  applyClassIcons(classList);
+}
+fetch('assets/ReflectionMetadata.xml').then(response=>response.text()).then(source=>{
+  const xml=new DOMParser().parseFromString(source,'application/xml');
+  studioClasses=[...xml.querySelectorAll('Item[class="ReflectionMetadataClasses"] > Item[class="ReflectionMetadataClass"] > Properties')].map(properties=>{
+    const read=name=>properties.querySelector(`[name="${name}"]`)?.textContent?.trim()||'';
+    return {name:read('Name'),category:read('ClassCategory')||'Engine',icon:Number(read('ExplorerImageIndex')||0),browsable:read('Browsable')!=='false'};
+  }).filter(item=>item.name&&item.browsable).sort((a,b)=>a.name.localeCompare(b.name));
+  applyClassIcons(document);
+  renderClasses();
+}).catch(()=>classList.innerHTML='<p>Could not load the Studio class catalog.</p>');
+$('#add').onclick=()=>{classPicker.showModal();classSearch.value='';renderClasses();setTimeout(()=>classSearch.focus(),50)};
+$('#closeClasses').onclick=()=>classPicker.close();
+classSearch.oninput=event=>renderClasses(event.target.value);
+classList.onclick=event=>{
+  const button=event.target.closest('button[data-name]');if(!button)return;
+  const className=button.dataset.name;
+  if(['Part','MeshPart','SpawnLocation','TrussPart','WedgePart','CornerWedgePart'].includes(className)){
+    const part=new THREE.Mesh(new THREE.BoxGeometry(160,160,160),new THREE.MeshStandardMaterial({color:0xa3c76d,roughness:.72}));part.position.set((Math.random()-.5)*700,96,(Math.random()-.5)*700);part.castShadow=true;part.receiveShadow=true;scene.add(part);
+  }
+  classPicker.close();toast(`${className} selected`);
+};
 $('#color').oninput=event=>plate?.traverse(child=>{if(child.isMesh&&child.name==='Baseplate2')child.material.color.set(event.target.value)});document.querySelectorAll('.toggle').forEach(button=>button.onclick=()=>button.classList.toggle('on'));
 const pair=$('#pair');$('#pairBtn').onclick=()=>pair.showModal();$('#close').onclick=()=>pair.close();$('#code').onclick=()=>{navigator.clipboard?.writeText('BX7K-R4M2');toast('Pair code copied')};
 const prompt=$('#prompt'),messages=$('#messages');function send(){const value=prompt.value.trim();if(!value)return;const safe=value.replace(/[<>&]/g,char=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[char]));messages.insertAdjacentHTML('beforeend',`<article><b>Y</b><p><small>YOU</small>${safe}</p></article><article><b>B</b><p><small>BLOXY</small>Blueprint ready for backend generation. Pair Studio when the secure API is connected.</p></article>`);prompt.value='';messages.scrollTop=messages.scrollHeight}$('#send').onclick=send;prompt.onkeydown=event=>{if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}};document.querySelectorAll('.ideas button').forEach(button=>button.onclick=()=>{prompt.value=button.textContent;prompt.focus()});
