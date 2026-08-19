@@ -1,102 +1,19 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Bloxy makes Roblox thumbnails that look like real Studio renders.">
-  <title>Bloxy — AI thumbnails that don't look AI</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <nav class="nav" aria-label="Main navigation">
-    <a class="logo" href="#top"><span>B</span>Bloxy</a>
-    <div class="nav-links"><a href="#gallery">Gallery</a><a href="#prompt">Prompt library</a><a href="#pricing">Pricing</a></div>
-    <div class="nav-actions"><a href="#signin">Sign in</a><a class="button dark compact" href="#start">Start free</a></div>
-  </nav>
-
-  <main id="top">
-    <section class="hero wrap">
-      <div class="hero-copy reveal">
-        <span class="chip red">For Roblox creators</span>
-        <h1>AI thumbnails that don't look AI.</h1>
-        <p class="hero-sub">Type a scene, pick a face, ship a thumbnail Roblox creators can't tell wasn't shot in Studio.</p>
-        <div class="cta-row"><a class="button dark" href="#start">Start generating →</a><a class="underlink" href="#gallery">See the gallery</a></div>
-        <p class="proof"><strong>0</strong> thumbnails generated this week — be the first.</p>
-      </div>
-      <div class="head-stage reveal" aria-label="Rotating Roblox face preview">
-        <div class="head" id="faceHead">
-          <img class="face active" src="faces/Awesome Face.png" alt="Awesome Face decal">
-          <img class="face" src="faces/Absolutely Shocked.png" alt="Absolutely Shocked decal">
-          <img class="face" src="faces/XD 2.0.png" alt="XD 2.0 decal">
-          <img class="face" src="faces/ZOMG.png" alt="ZOMG decal">
-          <img class="face" src="faces/Winning Smile.png" alt="Winning Smile decal">
-          <img class="face" src="faces/Bacon Face.png" alt="Bacon Face decal">
-          <img class="face" src="faces/Beast Mode.png" alt="Beast Mode decal">
-          <img class="face" src="faces/Bling.png" alt="Bling decal">
-        </div>
-        <p>382 expressions. One stays right for your scene.</p>
-      </div>
-    </section>
-
-    <section class="comparison" id="gallery">
-      <div class="wrap"><div class="section-intro light reveal"><span class="kicker">The eye test</span><h2>Roblox players notice the difference.</h2></div>
-        <div class="compare-grid">
-          <article class="compare-card reveal"><div class="mock mid"><div class="mock-head"><span>AI</span></div><b class="mark bad">×</b></div><h3>Midjourney</h3><p>Turns blocky rigs into glossy characters with modeled faces.</p></article>
-          <article class="compare-card reveal"><div class="mock dalle"><div class="mock-head"><span>3D</span></div><b class="mark bad">×</b></div><h3>DALL-E</h3><p>Gets the scene, then misses Roblox geometry and lighting.</p></article>
-          <article class="compare-card reveal"><div class="mock bloxy"><div class="roblox-head"><img src="faces/Absolutely Shocked.png" alt="Flat shocked face decal"></div><b class="mark good">✓</b></div><h3>Bloxy</h3><p>Flat decals, R15 proportions, and Future lighting stay locked.</p></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="features wrap">
-      <div class="section-intro reveal"><span class="kicker">Built for the thumbnail grind</span><h2>The details creators usually fix by hand.</h2></div>
-      <div class="bento">
-        <article class="feature big stamped reveal"><span>DECAL LOCK</span><h3>Face decals stay flat</h3><p>The shocked face stays printed on the head. No modeled mouth, fake teeth, or human nose.</p><img src="faces/Absolutely Shocked.png" alt="Shocked face decal"></article>
-        <article class="feature reveal"><span>LIGHTING</span><h3>Future lighting, locked</h3><p>Warm key, cool fill, clean rim. The scene reads like Studio.</p><div class="swatches"><i></i><i></i><i></i></div></article>
-        <article class="feature reveal"><span>LIBRARY</span><h3>382 official-style faces</h3><p>Pick by mood or let Bloxy rank expressions for the headline.</p><strong class="number">382</strong></article>
-        <article class="feature reveal"><span>RIGS</span><h3>Every R15 rig, ready</h3><p>Blocky, 2.0, boy, girl, man, woman, or superhero—chosen per scene.</p><div class="rig-placeholder">RIG RENDERS<br>COMING NEXT</div></article>
-        <article class="feature big reveal"><span>PROMPTING</span><h3>Prompt in plain English</h3><p>Describe the moment like you'd brief a thumbnail artist. Bloxy handles camera, lighting, decal rules, and negatives.</p><div class="mini-prompt">A blocky hero escaping a collapsing lava tower, shocked face, coins in the air…</div></article>
-        <article class="feature reveal"><span>WORKFLOW</span><h3>Batch export for a series</h3><p>Keep the same visual language across an update, challenge, or upload run.</p><div class="batch"><i>01</i><i>02</i><i>03</i></div></article>
-      </div>
-    </section>
-
-    <section class="prompt-section" id="prompt"><div class="wrap prompt-grid">
-      <div class="section-intro reveal"><span class="kicker">Under the hood</span><h2>The prompt system doing the work.</h2><p>One structured brief locks Roblox geometry, decal behavior, composition, and lighting before generation starts.</p></div>
-      <pre class="prompt-code reveal"><code><span class="comment">// CHARACTER CONSTRUCTION</span>
-Body: use <span class="variable">[IMG_1]</span> as exact R15 rig reference
-Face: project <span class="variable">[IMG_2]</span> as a FLAT 2D decal
-Materials: SmoothPlastic, subtle sheen
-
-<span class="section">## COMPOSITION</span>
-Aspect: <span class="variable">16:9 · 1280×720</span>
-Camera: 24mm, 3/4 angle, 15° low tilt
-Left third: calm space for <span class="variable">{HEADLINE}</span>
-
-<span class="section">## HARD NEGATIVES</span>
-no human anatomy, modeled face, anime,
-Fortnite, Lego, or painted illustration</code></pre>
-    </div></section>
-
-    <section class="pricing wrap" id="pricing">
-      <div class="section-intro center reveal"><span class="kicker">Start without guessing</span><h2>Pick the pace you ship at.</h2></div>
-      <div class="price-grid">
-        <article class="price reveal"><span>FREE</span><h3>$0</h3><p>Try the prompt builder and test your first thumbnail direction.</p><ul><li>Starter generations</li><li>Face library access</li><li>PNG export</li></ul><a class="button outline" href="#start">Start free</a></article>
-        <article class="price popular reveal"><span class="chip yellow">Pay for what you create</span><h4>BLOXY PRO</h4><h3>$22.99 <small>/ month</small></h3><p>Includes 2,200 Bits. One Bit equals one cent of AI usage across Gemini and Tripo.</p><ul><li>2,200 Bits every month</li><li>Basic 3D from 10 Bits</li><li>Textured 3D from 30 Bits</li><li>Gemini thumbnails from 4 Bits</li></ul><a class="button dark" href="#start">Choose Pro</a></article>
-        <article class="price reveal"><span>TOP-UPS</span><h3>Keep building</h3><p>Add usage without changing your subscription. Purchased Bits stay in your wallet.</p><ul><li>500 Bits · $5</li><li>1,000 Bits · $10</li><li>Clear cost before generating</li></ul><a class="button outline" href="#start">Open Bloxy</a></article>
-      </div>
-    </section>
-
-    <section class="final-cta" id="start"><div class="wrap reveal"><span class="chip yellow">Your next thumbnail</span><h2>Make it look like Roblox.<br>Not like a model guessing Roblox.</h2><a class="button cream" href="../">Open Bloxy →</a></div></section>
-  </main>
-
-  <footer><div class="wrap footer-grid"><div><a class="logo light-logo" href="#top"><span>B</span>Bloxy</a><p>Thumbnails that respect the rigs, faces, and lighting Roblox creators actually use.</p></div><div><b>Product</b><a href="#gallery">Gallery</a><a href="#prompt">Prompt library</a><a href="#pricing">Pricing</a></div><div><b>Resources</b><a href="#">Guides</a><a href="#">Examples</a><a href="#">Status</a></div><div><b>Company</b><a href="#">About</a><a href="#">Contact</a></div><div><b>Legal</b><a href="#">Terms</a><a href="#">Privacy</a></div></div><div class="wrap disclaimer">Not affiliated with Roblox Corporation.</div></footer>
-
-  <script>
-    const faces=[...document.querySelectorAll('.face')]; let faceIndex=0;
-    setInterval(()=>{faces[faceIndex].classList.remove('active');faceIndex=(faceIndex+1)%faces.length;faces[faceIndex].classList.add('active')},2400);
-    const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('shown');observer.unobserve(entry.target)}}),{threshold:.12});
-    document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
-    addEventListener('scroll',()=>document.querySelector('.nav').classList.toggle('scrolled',scrollY>8),{passive:true});
-  </script>
-</body>
-</html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Bloxy turns ideas into Roblox worlds, scripts, 3D assets, UI, and thumbnails."><title>Bloxy — Build Roblox games with AI</title><link rel="stylesheet" href="styles.css"></head>
+<body class="builder-site"><nav class="nav"><a class="logo" href="#top"><span>B</span>Bloxy</a><div class="nav-links"><a href="#build">What it builds</a><a href="#workflow">How it works</a><a href="#pricing">Pricing</a></div><div class="nav-actions"><a href="#plugin">Studio plugin</a><a class="button dark compact" href="#start">Open Bloxy</a></div></nav>
+<main id="top">
+<section class="hero builder-hero wrap"><div class="hero-copy reveal"><span class="chip red">AI game builder for Roblox</span><h1>Say the game.<br><em>Bloxy builds it.</em></h1><p class="hero-sub">Turn one idea into a playable Roblox experience—world layout, Luau systems, UI, 3D assets, and launch art included.</p><div class="cta-row"><a class="button dark" href="#start">Start building →</a><a class="underlink" href="#workflow">See the full workflow</a></div><p class="proof"><strong>Website → blueprint → Roblox Studio.</strong> You approve every change.</p></div>
+<div class="build-console reveal"><div class="console-bar"><span><i></i><i></i><i></i></span><b>BLOXY / LIVE BUILD</b><small>STUDIO CONNECTED</small></div><div class="console-prompt"><small>YOUR IDEA</small><p>Build a round-based lava tower with a shop, wins leaderboard, and dramatic lobby.</p><button aria-label="Generate build">↗</button></div><div class="pipeline"><div class="pipeline-head"><span>BUILD BLUEPRINT</span><b>6 tasks ready</b></div><ol><li class="done"><span>WORLD</span><strong>Lobby + lava tower</strong><i>ready</i></li><li class="done"><span>CODE</span><strong>Round and win systems</strong><i>ready</i></li><li><span>UI</span><strong>Shop + round timer</strong><i>building</i></li><li><span>3D</span><strong>Winner crown asset</strong><i>queued</i></li></ol></div><div class="console-foot"><span>2,196 Bits</span><button>Review in Studio</button></div></div></section>
+<section class="manifest"><div class="manifest-track"><span>WORLDS</span><i>◆</i><span>LUAU CODE</span><i>◆</i><span>3D ASSETS</span><i>◆</i><span>GAME UI</span><i>◆</i><span>THUMBNAILS</span><i>◆</i><span>STUDIO EXPORT</span></div></section>
+<section class="build-section wrap" id="build"><div class="section-intro reveal"><span class="kicker">One builder, the whole game</span><h2>Everything between the idea and “Play.”</h2><p>Bloxy coordinates the parts that normally send you between chatbots, asset generators, Blender, and Studio.</p></div><div class="tool-grid">
+<article class="tool-card world reveal"><div class="tool-icon"><span></span><span></span><span></span></div><small>WORLD BUILDER</small><h3>Maps with structure</h3><p>Generate lobbies, obstacle courses, arenas, props, lighting, and spawn layouts as one coherent world.</p></article>
+<article class="tool-card code reveal"><div class="code-lines">if round.active then<br>&nbsp;&nbsp;lava:Raise()<br>&nbsp;&nbsp;timer:Start()<br>end</div><small>GAME SYSTEMS</small><h3>Luau that works together</h3><p>Rounds, shops, data saving, leaderboards, tools, and interactions—planned as a system, not loose snippets.</p></article>
+<article class="tool-card asset reveal"><div class="asset-shape"><i></i></div><small>TRIPO 3D</small><h3>Assets made for the scene</h3><p>Create props and characters from text or images, then bring them into the same project.</p></article>
+<article class="tool-card ui reveal"><div class="ui-frame"><b>ROUND 02</b><span>01:34</span><button>SHOP</button></div><small>PLAYER UI</small><h3>Interfaces players understand</h3><p>HUDs, menus, shops, timers, and mobile-ready controls with consistent visual rules.</p></article>
+<article class="tool-card thumb reveal"><div class="thumb-frame"><div class="thumb-avatar"><img src="faces/Absolutely Shocked.png" alt="Roblox-style shocked face"></div><b>LAVA!</b></div><small>LAUNCH ART</small><h3>Thumbnails are included</h3><p>When the game is ready, create Roblox-authentic thumbnails based on the actual experience.</p></article>
+<article class="tool-card safety reveal"><div class="shield">✓</div><small>SAFE DELIVERY</small><h3>Nothing changes silently</h3><p>Review the blueprint first. Bloxy scans scripts, limits risky actions, and keeps Studio undo available.</p></article></div></section>
+<section class="workflow-section" id="workflow"><div class="wrap"><div class="section-intro light reveal"><span class="kicker">The Bloxy loop</span><h2>Build on the web.<br>Finish in Studio.</h2></div><div class="workflow-grid"><article class="reveal"><b>1</b><span>DESCRIBE</span><h3>Tell Bloxy what should be fun.</h3><p>Start with the game loop, an object, or one feature. Plain language is enough.</p></article><article class="reveal"><b>2</b><span>REVIEW</span><h3>See the build before it lands.</h3><p>Inspect the world, scripts, UI, assets, and exact Bit cost in one blueprint.</p></article><article class="reveal"><b>3</b><span>PAIR</span><h3>Enter one short Studio code.</h3><p>The website connects privately to the Bloxy plugin without placing API keys in Roblox.</p></article><article class="reveal"><b>4</b><span>APPLY</span><h3>Send approved work to Studio.</h3><p>Test, revise, and keep building. You remain in control of the experience.</p></article></div></div></section>
+<section class="bridge-section wrap" id="plugin"><div class="bridge-copy reveal"><span class="kicker">Website + Roblox Studio</span><h2>One pairing code.<br>No key sharing.</h2><p>Bloxy keeps Gemini and Tripo credentials on its private backend. The plugin receives only approved build instructions and assets.</p><ul><li>Short-lived connection codes</li><li>Script safety scanning</li><li>Visible build blueprint</li><li>One-click Studio undo</li></ul></div><div class="pair-demo reveal"><span>PAIRING CODE</span><strong>BX7K–R4M2</strong><small>LIVE · 60 MIN</small><div class="pair-line"><i></i><b>Roblox Studio connected</b></div></div></section>
+<section class="pricing wrap" id="pricing"><div class="section-intro center reveal"><span class="kicker">Simple usage, no mystery limits</span><h2>Pay for what Bloxy builds.</h2><p>One Bit equals one cent of AI usage. Every action shows its price before you run it.</p></div><div class="price-grid"><article class="price reveal"><span>STARTER</span><h3>$0</h3><p>Explore the builder and pair your first Studio project.</p><ul><li>25 starter Bits</li><li>Build blueprints</li><li>Roblox Studio pairing</li></ul><a class="button outline" href="#start">Start free</a></article><article class="price popular reveal"><span class="chip yellow">Full builder access</span><h4>BLOXY PRO</h4><h3>$22.99 <small>/ month</small></h3><p>2,200 Bits for Gemini and Tripo tools across your whole workflow.</p><ul><li>World and Luau generation</li><li>3D assets and thumbnails</li><li>2,200 monthly Bits</li><li>Studio plugin export</li></ul><a class="button dark" href="#start">Choose Pro</a></article><article class="price reveal"><span>TOP-UPS</span><h3>Build more</h3><p>Add Bits without changing your subscription. Purchased Bits do not expire.</p><ul><li>500 Bits · $5</li><li>1,000 Bits · $10</li><li>Live balance and history</li></ul><a class="button outline" href="#start">Open Bloxy</a></article></div></section>
+<section class="final-cta" id="start"><div class="wrap reveal"><span class="chip yellow">Your game starts as a sentence</span><h2>Stop collecting AI outputs.<br>Start building the experience.</h2><a class="button cream" href="https://github.com/Radin-dev1/Bloxy">Open Bloxy →</a></div></section></main>
+<footer><div class="wrap footer-grid"><div><a class="logo light-logo" href="#top"><span>B</span>Bloxy</a><p>The AI game builder connecting your idea, the web, and Roblox Studio.</p></div><div><b>Build</b><a href="#build">Worlds</a><a href="#build">Code</a><a href="#build">3D assets</a></div><div><b>Connect</b><a href="#plugin">Studio plugin</a><a href="#workflow">Workflow</a></div><div><b>Plans</b><a href="#pricing">Starter</a><a href="#pricing">Pro</a></div><div><b>Project</b><a href="https://github.com/Radin-dev1/Bloxy">GitHub</a><a href="#">Status</a></div></div><div class="wrap disclaimer">Not affiliated with Roblox Corporation.</div></footer>
+<script>const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('shown');observer.unobserve(entry.target)}}),{threshold:.1});document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));addEventListener('scroll',()=>document.querySelector('.nav').classList.toggle('scrolled',scrollY>8),{passive:true});</script></body></html>
