@@ -5,7 +5,7 @@ local HttpService = game:GetService("HttpService")
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
 local InsertService = game:GetService("InsertService")
 
-local WEBSITE_URL = "https://YOUR-BLOXY-SITE.example"
+local WEBSITE_URL = "https://bloxy.radin-yt1324.workers.dev"
 local toolbar = plugin:CreateToolbar("Bloxy")
 local openButton = toolbar:CreateButton("Bloxy", "Pair Studio with the Bloxy website", "")
 local widgetInfo = DockWidgetPluginGuiInfo.new(Enum.InitialDockState.Right, false, false, 390, 560, 320, 430)
@@ -35,7 +35,7 @@ local applyButton=new("TextButton",{LayoutOrder=7,Size=UDim2.new(1,0,0,44),Backg
 local pluginToken = plugin:GetSetting("BloxyPluginToken")
 local currentJob = nil
 local polling = false
-local allowedClasses = {Folder=true,Model=true,Part=true,SpawnLocation=true,ScreenGui=true,Frame=true,TextLabel=true,TextButton=true,UIListLayout=true,UICorner=true,UIStroke=true}
+local allowedClasses = {Folder=true,Model=true,Part=true,WedgePart=true,SpawnLocation=true,ScreenGui=true,Frame=true,ScrollingFrame=true,ImageLabel=true,ImageButton=true,TextLabel=true,TextButton=true,TextBox=true,UIListLayout=true,UIGridLayout=true,UIPadding=true,UICorner=true,UIStroke=true,UIGradient=true,UIAspectRatioConstraint=true}
 local allowedRoots = {Workspace=workspace,ReplicatedStorage=game:GetService("ReplicatedStorage"),ServerScriptService=game:GetService("ServerScriptService"),StarterGui=game:GetService("StarterGui"),StarterPlayer=game:GetService("StarterPlayer")}
 
 local function request(path, method, body, auth)
@@ -60,6 +60,41 @@ local function safeSource(source)
 	return #source <= 30000
 end
 
+local function colorFromHex(value)
+	if typeof(value)~="string" then return value end
+	local hex=string.gsub(value,"#","")
+	if #hex~=6 then return value end
+	return Color3.fromRGB(tonumber(string.sub(hex,1,2),16) or 255,tonumber(string.sub(hex,3,4),16) or 255,tonumber(string.sub(hex,5,6),16) or 255)
+end
+
+local function applyProperty(object,property,value)
+	if property=="SearchQuery" or property=="Scale" then return end
+	if object:IsA("BasePart") then
+		if (property=="Position" or property=="Size") and typeof(value)=="table" then object[property]=Vector3.new(tonumber(value[1]) or 0,tonumber(value[2]) or 0,tonumber(value[3]) or 0); return end
+		if property=="Rotation" and typeof(value)=="table" then object.Orientation=Vector3.new(tonumber(value[1]) or 0,tonumber(value[2]) or 0,tonumber(value[3]) or 0); return end
+		if property=="Color" then object.Color=colorFromHex(value); return end
+		if property=="Material" and typeof(value)=="string" and Enum.Material[value] then object.Material=Enum.Material[value]; return end
+		if property=="Shape" then
+			if object:IsA("Part") and value~="Wedge" and Enum.PartType[value] then object.Shape=Enum.PartType[value] end
+			return
+		end
+	end
+	if object:IsA("GuiObject") then
+		if (property=="Position" or property=="Size") and typeof(value)=="table" then object[property]=UDim2.new(tonumber(value[1]) or 0,tonumber(value[2]) or 0,tonumber(value[3]) or 0,tonumber(value[4]) or 0); return end
+		if property=="AnchorPoint" and typeof(value)=="table" then object.AnchorPoint=Vector2.new(tonumber(value[1]) or 0,tonumber(value[2]) or 0); return end
+	end
+	if (property=="BackgroundColor3" or property=="TextColor3" or property=="ImageColor3" or property=="Color") and typeof(value)=="string" then object[property]=colorFromHex(value); return end
+	if property=="Font" and typeof(value)=="string" and Enum.Font[value] then object.Font=Enum.Font[value]; return end
+	if property=="TextXAlignment" and typeof(value)=="string" and Enum.TextXAlignment[value] then object.TextXAlignment=Enum.TextXAlignment[value]; return end
+	if property=="TextYAlignment" and typeof(value)=="string" and Enum.TextYAlignment[value] then object.TextYAlignment=Enum.TextYAlignment[value]; return end
+	if property=="FillDirection" and typeof(value)=="string" and Enum.FillDirection[value] then object.FillDirection=Enum.FillDirection[value]; return end
+	if property=="HorizontalAlignment" and typeof(value)=="string" and Enum.HorizontalAlignment[value] then object.HorizontalAlignment=Enum.HorizontalAlignment[value]; return end
+	if property=="VerticalAlignment" and typeof(value)=="string" and Enum.VerticalAlignment[value] then object.VerticalAlignment=Enum.VerticalAlignment[value]; return end
+	if property=="SortOrder" and typeof(value)=="string" and Enum.SortOrder[value] then object.SortOrder=Enum.SortOrder[value]; return end
+	if (property=="CornerRadius" or property=="Padding" or string.find(property,"Padding")) and typeof(value)=="table" then object[property]=UDim.new(tonumber(value[1]) or 0,tonumber(value[2]) or 0); return end
+	object[property]=value
+end
+
 local function renderJob(job)
 	currentJob=job
 	local lines={"PROMPT\n"..job.prompt,"\nPROPOSED ACTIONS"}
@@ -77,8 +112,10 @@ local function applyJob()
 		if not parent then error("Parent not found: "..tostring(action.parent)) end
 		if action.type=="create_instance" then
 			if not allowedClasses[action.className] then error("Blocked class: "..tostring(action.className)) end
-			local object=Instance.new(action.className); object.Name=action.name
-			for property,value in pairs(action.properties or {}) do pcall(function() object[property]=value end) end
+			local className=action.className
+			if className=="Part" and action.properties and action.properties.Shape=="Wedge" then className="WedgePart" end
+			local object=Instance.new(className); object.Name=action.name
+			for property,value in pairs(action.properties or {}) do pcall(function() applyProperty(object,property,value) end) end
 			object.Parent=parent
 		elseif action.type=="create_script" then
 			if not safeSource(action.source or "") then error("Generated script failed safety checks") end
