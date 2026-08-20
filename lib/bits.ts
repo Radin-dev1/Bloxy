@@ -2,7 +2,7 @@ import {db,digest} from "./bridge";
 
 export const BITS_PER_DOLLAR=100;
 export const PRO_MONTHLY_BITS=2200;
-export const ACTION_COSTS={blueprint:1,thumbnail:4,"3d_basic":10,"3d_textured":30,"3d_premium":50} as const;
+export const ACTION_COSTS={blueprint:1,thumbnail:4,"3d_basic":4,"3d_textured":6,"3d_premium":10} as const;
 export type BillableAction=keyof typeof ACTION_COSTS;
 
 export async function walletForToken(rawToken:string){const database=await db();return database.prepare(`SELECT w.id,w.balance_bits,w.plan,w.renews_at FROM wallets w JOIN bridge_sessions s ON s.id=w.session_id WHERE s.web_token_hash=?`).bind(await digest(rawToken)).first<{id:string;balance_bits:number;plan:string;renews_at:number|null}>();}
