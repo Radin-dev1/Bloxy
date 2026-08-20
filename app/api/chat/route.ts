@@ -35,5 +35,5 @@ export async function POST(request:Request){
     const actions=await resolveCreatorModels(await generateBlueprint(prompt,provider));
     await database.batch([database.prepare("INSERT INTO build_jobs (id,session_id,prompt,actions_json,status,created_at) VALUES (?,?,?,?,?,?)").bind(jobId,session.id,prompt,JSON.stringify(actions),session.status==="connected"?"pending":"draft",Date.now()),database.prepare("UPDATE bridge_sessions SET request_count=request_count+1 WHERE id=?").bind(session.id)]);
     return json({jobId,actions,bitsCharged:charge.cost,balanceBits:charge.balance,studioPaired:session.status==="connected",requestCount:session.request_count+1,requestLimit:40});
-  }catch(error){await refund(charge.walletId,"blueprint",jobId);throw error;}
+  }catch(error){await refund(charge.walletId,"blueprint",jobId);return json({error:error instanceof Error?error.message:"Blueprint generation failed. Your Bit was refunded."},502);}
 }

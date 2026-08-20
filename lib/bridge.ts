@@ -53,7 +53,7 @@ async function askAI(system:string,prompt:string,provider:AIProvider={}){
   const id=provider.id||"bloxy",key=provider.apiKey||(env as unknown as {GEMINI_API_KEY?:string}).GEMINI_API_KEY;
   if(!key)throw new Error(id==="bloxy"?"GEMINI_API_KEY is not configured":"Add your provider API key in AI Providers");
   if(id==="bloxy"||id==="gemini"){
-    const model=(provider.model||"gemini-3.1-pro-preview").replace(/[^a-zA-Z0-9._-]/g,"");
+    const model=(provider.model||"gemini-3.7-flash").replace(/[^a-zA-Z0-9._-]/g,"");
     const request={method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify({system_instruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{temperature:.15,maxOutputTokens:8192,responseMimeType:"application/json"}})};
     let response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,request);
     if(!response.ok&&id==="bloxy"&&model==="gemini-3.1-pro-preview")response=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent",request);
@@ -94,7 +94,7 @@ export async function generateBlueprint(prompt:string,provider:AIProvider={}):Pr
   let actions=parseActions(raw);
   if(!Array.isArray(actions)||actions.length>36) throw new Error("AI provider returned an invalid blueprint");
   let weakness=weakDraftReason(actions,prompt);
-  for(let attempt=0;attempt<2&&weakness;attempt++){
+  for(let attempt=0;attempt<1&&weakness;attempt++){
     try{
       raw=await askAI(system+assetInstruction+uiInstruction,`Rebuild this weak draft. Problem: ${weakness} Preserve the request but return a complete replacement JSON array. User request: ${JSON.stringify(prompt)} Weak draft: ${JSON.stringify(actions)}`,provider);
       const repaired=parseActions(raw);if(Array.isArray(repaired)&&repaired.length<=36&&blueprintScore(repaired,prompt)>=blueprintScore(actions,prompt))actions=repaired;
