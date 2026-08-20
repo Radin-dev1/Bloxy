@@ -53,7 +53,7 @@ async function askAI(system:string,prompt:string,provider:AIProvider={}){
   const id=provider.id||"bloxy",key=provider.apiKey||(env as unknown as {GEMINI_API_KEY?:string}).GEMINI_API_KEY;
   if(!key)throw new Error(id==="bloxy"?"GEMINI_API_KEY is not configured":"Add your provider API key in AI Providers");
   if(id==="bloxy"||id==="gemini"){
-    const model=(provider.model||"gemini-3.7-flash").replace(/[^a-zA-Z0-9._-]/g,"");
+    const model=(provider.model||"gemini-3.6-flash").replace(/[^a-zA-Z0-9._-]/g,"");
     const request={method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify({system_instruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{temperature:.15,maxOutputTokens:8192,responseMimeType:"application/json"}})};
     let response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,request);
     if(!response.ok&&id==="bloxy"&&model==="gemini-3.1-pro-preview")response=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent",request);
@@ -102,10 +102,5 @@ export async function generateBlueprint(prompt:string,provider:AIProvider={}):Pr
     weakness=weakDraftReason(actions,prompt);
   }
   const draft=normalize(actions);
-  const critique=`You are Bloxy's senior Roblox build reviewer. Improve this draft before it reaches the viewport. Return only a replacement JSON array of at most 36 actions using the exact same schema. Preserve the user's intent and useful scripts. Check every item against this rubric: recognizable silhouette; correct Roblox scale; no accidental overlap; all parts above the baseplate; walkable routes at least 6 studs wide; reachable platforms; structural supports; coherent 3–5 color palette; deliberate material choices; layered detail rather than plain boxes; useful names and parent models. Fix weak geometry, sparse scenes, random placement, impossible jumps, missing frames/supports/details, and colors that fight each other. Do not add unsafe code or unsupported classes. User request: ${JSON.stringify(prompt)}. Draft: ${JSON.stringify(draft)}`;
-  try{
-    const qualityGate="Act like a shipping-quality Roblox art director. Before returning JSON, silently score the draft from 1-10 for silhouette, composition, route clarity, scale, theme consistency, asset usefulness, and gameplay readability. Rewrite anything scoring below 8. Imported models must have deliberate Position, Rotation and Scale and must not replace playable geometry. Remove redundant parts, placeholder blocks, irrelevant assets, unsafe scripts, and accidental intersections. Ensure the first 10 seconds from SpawnLocation reveal a focal landmark and an obvious next destination. ";
-    const reviewed=parseActions(await askAI("Return only valid JSON.",qualityGate+critique,provider)),reviewedDraft=Array.isArray(reviewed)&&reviewed.length<=36?normalize(reviewed):[];
-    return reviewedDraft.length&&blueprintScore(reviewedDraft,prompt)>=blueprintScore(draft,prompt)?reviewedDraft:draft;
-  }catch{return draft;}
+  return draft;
 }
