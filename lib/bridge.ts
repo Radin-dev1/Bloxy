@@ -46,24 +46,36 @@ function normalize(actions:BuildAction[]){
   });
 }
 
-export async function generateBlueprint(prompt:string):Promise<BuildAction[]> {
-  const key=(env as unknown as {GEMINI_API_KEY?:string}).GEMINI_API_KEY;
-  if(!key) throw new Error("GEMINI_API_KEY is not configured");
+export type AIProvider = {id?:string; model?:string; apiKey?:string};
+const providerEndpoints:Record<string,string>={freeai:"https://api.free.ai/v1/chat/",openrouter:"https://openrouter.ai/api/v1/chat/completions",groq:"https://api.groq.com/openai/v1/chat/completions",nvidia:"https://integrate.api.nvidia.com/v1/chat/completions",cerebras:"https://api.cerebras.ai/v1/chat/completions",github:"https://models.github.ai/inference/chat/completions"};
+async function askAI(system:string,prompt:string,provider:AIProvider={}){
+  const id=provider.id||"bloxy",key=provider.apiKey||(env as unknown as {GEMINI_API_KEY?:string}).GEMINI_API_KEY;
+  if(!key)throw new Error(id==="bloxy"?"GEMINI_API_KEY is not configured":"Add your provider API key in AI Providers");
+  if(id==="bloxy"||id==="gemini"){
+    const model=(provider.model||"gemini-3.1-flash-lite").replace(/[^a-zA-Z0-9._-]/g,"");
+    const response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify({system_instruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{temperature:.15,maxOutputTokens:8192,responseMimeType:"application/json"}})});
+    if(!response.ok)throw new Error(`AI provider request failed (${response.status})`);
+    const payload=await response.json() as {candidates?:Array<{content?:{parts?:Array<{text?:string}>}}>};
+    return payload.candidates?.[0]?.content?.parts?.[0]?.text||"";
+  }
+  const endpoint=providerEndpoints[id];if(!endpoint)throw new Error("Unsupported AI provider");
+  const response=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`,...(id==="openrouter"?{"HTTP-Referer":"https://radin-dev1.github.io/Bloxy/","X-Title":"Bloxy"}:{})},body:JSON.stringify({model:(provider.model||"").slice(0,180),messages:[{role:"system",content:system},{role:"user",content:prompt}],temperature:.15,max_tokens:8192})});
+  if(!response.ok)throw new Error(`AI provider request failed (${response.status})`);
+  const payload=await response.json() as {choices?:Array<{message?:{content?:string|Array<{text?:string}>}}>};const content=payload.choices?.[0]?.message?.content;
+  return typeof content==="string"?content:Array.isArray(content)?content.map(part=>part.text||"").join(""):"";
+}
+function parseActions(raw:string){const cleaned=raw.trim().replace(/^```(?:json)?\s*/i,"").replace(/\s*```$/,"");const parsed=JSON.parse(cleaned) as BuildAction[]|{actions?:BuildAction[]};return Array.isArray(parsed)?parsed:parsed.actions;}
+
+export async function generateBlueprint(prompt:string,provider:AIProvider={}):Promise<BuildAction[]> {
   const system="You are Bloxy, a senior Roblox Studio environment artist and gameplay architect. Turn the request into a playable, visually coherent Roblox build, never placeholder cubes. Internally plan in this order before emitting JSON: player route and scale; named models; primary silhouettes; secondary detail; lighting/material accents; gameplay scripts. Use Roblox conventions: 1 stud is roughly 0.28 meters, doors are about 7 studs high, walkways are at least 6 studs wide, steps are 1–2 studs high, and every playable surface must be reachable. Build with a restrained palette of 3–5 related colors, one accent color, intentional repetition, symmetry where appropriate, and clear focal points. Return only a JSON array of at most 36 declarative actions. Allowed types: create_instance and create_script. Allowed instance classes: Folder, Model, Part, SpawnLocation, ScreenGui, Frame, TextLabel, TextButton, UIListLayout, UICorner, UIStroke. Every action requires id, type, name, parent, and summary. For EVERY Part and SpawnLocation, properties are REQUIRED: Position as [x,y,z] deliberate absolute world coordinates; Size as [x,y,z] with values 0.5 to 160; Color as #RRGGBB; Material as Plastic, SmoothPlastic, Concrete, Metal, Wood, Grass, Neon, or Glass; Shape as Block, Ball, Cylinder, or Wedge; Rotation as [x,y,z] degrees; Anchored true. Build recognizable models from multiple purposefully arranged parts. A tree needs trunk and layered canopy; a house needs floor, walls, roof, framed door and windows; a portal needs supports, arch, inset glow and a readable approach; an obstacle course needs distinct platforms along a fair, playable route. Use thin trim parts, frames, supports, rails, signs, and layered silhouettes instead of relying on one large block. Use Model actions as named containers and set child Part parent to that model name, but keep child Position absolute. Never scatter parts randomly or overlap objects accidentally. Keep builds centered around the baseplate origin and above y=1. Group related objects spatially and leave walkable paths. Use 12 to 32 geometric parts for a full scene when appropriate. Example properties: {\"Position\":[0,6,0],\"Size\":[12,10,8],\"Color\":\"#D86F5D\",\"Material\":\"SmoothPlastic\",\"Shape\":\"Block\",\"Rotation\":[0,15,0],\"Anchored\":true}. create_script requires source and its parent must be ServerScriptService, ReplicatedStorage, StarterPlayer.StarterPlayerScripts, or StarterGui. Use safe server-authoritative Luau. Never use require(assetId), loadstring, HttpGet, external URLs, obfuscation, purchases, or destructive operations.";
-  const response=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify({system_instruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{temperature:.15,maxOutputTokens:8192,responseMimeType:"application/json"}})});
-  if(!response.ok) throw new Error(`Gemini request failed (${response.status})`);
-  const payload=await response.json() as {candidates?:Array<{content?:{parts?:Array<{text?:string}>}}>};
-  const raw=payload.candidates?.[0]?.content?.parts?.[0]?.text;
-  if(!raw) throw new Error("Gemini returned no blueprint");
-  const actions=JSON.parse(raw) as BuildAction[];
-  if(!Array.isArray(actions)||actions.length>36) throw new Error("Gemini returned an invalid blueprint");
+  const raw=await askAI(system,prompt,provider);
+  if(!raw) throw new Error("AI provider returned no blueprint");
+  const actions=parseActions(raw);
+  if(!Array.isArray(actions)||actions.length>36) throw new Error("AI provider returned an invalid blueprint");
   const draft=normalize(actions);
   const critique=`You are Bloxy's senior Roblox build reviewer. Improve this draft before it reaches the viewport. Return only a replacement JSON array of at most 36 actions using the exact same schema. Preserve the user's intent and useful scripts. Check every item against this rubric: recognizable silhouette; correct Roblox scale; no accidental overlap; all parts above the baseplate; walkable routes at least 6 studs wide; reachable platforms; structural supports; coherent 3–5 color palette; deliberate material choices; layered detail rather than plain boxes; useful names and parent models. Fix weak geometry, sparse scenes, random placement, impossible jumps, missing frames/supports/details, and colors that fight each other. Do not add unsafe code or unsupported classes. User request: ${JSON.stringify(prompt)}. Draft: ${JSON.stringify(draft)}`;
   try{
-    const reviewResponse=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify({contents:[{role:"user",parts:[{text:critique}]}],generationConfig:{temperature:.1,maxOutputTokens:8192,responseMimeType:"application/json"}})});
-    if(!reviewResponse.ok)return draft;
-    const reviewPayload=await reviewResponse.json() as {candidates?:Array<{content?:{parts?:Array<{text?:string}>}}>};
-    const reviewed=JSON.parse(reviewPayload.candidates?.[0]?.content?.parts?.[0]?.text||"null") as BuildAction[];
+    const reviewed=parseActions(await askAI("Return only valid JSON.",critique,provider));
     return Array.isArray(reviewed)&&reviewed.length<=36?normalize(reviewed):draft;
   }catch{return draft;}
 }
