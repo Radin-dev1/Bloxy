@@ -36,10 +36,11 @@ function color(value:BuildValue|undefined){
   return "#A3A3A3";
 }
 function normalize(actions:BuildAction[]){
+  const namedClasses=new Set(["Folder","Model","Part","SpawnLocation","ScreenGui","Frame","ScrollingFrame","ImageLabel","ImageButton","TextLabel","TextButton","TextBox","UIListLayout","UIGridLayout","UIPadding","UICorner","UIStroke","UIGradient","UIAspectRatioConstraint"]);
   return actions.map((action,index)=>{
     const raw=action as BuildAction&Record<string,BuildValue|undefined>,keys=["Position","Size","Color","Material","Shape","Rotation","Anchored","Transparency"],properties={...(action.properties||{})};
     keys.forEach(key=>{if(raw[key]!==undefined&&properties[key]===undefined)properties[key]=raw[key] as BuildValue});
-    const geometric=properties.Position!==undefined||properties.Size!==undefined,className=action.className||(geometric?"Part":action.name.endsWith("Model")?"Model":undefined);
+    const geometric=properties.Position!==undefined||properties.Size!==undefined,className=action.className||(namedClasses.has(action.name)?action.name:geometric?"Part":action.name.endsWith("Model")?"Model":undefined);
     if(action.type!=="create_instance"||!["Part","SpawnLocation"].includes(className||""))return {...action,...(className?{className}:{})};
     const size=vector(properties.Size,[10,10,10]).map(value=>Math.max(.5,Math.min(160,Math.abs(value)||1)));
     return {...action,className,properties:{...properties,Position:vector(properties.Position,[(index%5-2)*14,size[1]/2+1,(Math.floor(index/5)-2)*14]),Size:size,Color:color(properties.Color),Material:typeof properties.Material==="string"?properties.Material:"SmoothPlastic",Shape:typeof properties.Shape==="string"?properties.Shape:"Block",Rotation:vector(properties.Rotation,[0,0,0]),Anchored:true}};

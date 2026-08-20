@@ -75,7 +75,7 @@ local function colorFromHex(value)
 end
 
 local function numbers(value)
-	if typeof(value)=="table" then return value end
+	if typeof(value)=="table" then return value.UDim2 or value.Vector3 or value.Vector2 or value.UDim or value end
 	if typeof(value)=="string" then
 		local output={}
 		for _,piece in ipairs(string.split(value,",")) do table.insert(output,tonumber(string.gsub(piece,"%s","")) or 0) end
