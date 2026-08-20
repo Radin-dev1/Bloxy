@@ -25,6 +25,24 @@ export async function digest(value:string){ const bytes=await crypto.subtle.dige
 export function bearer(request:Request){ const value=request.headers.get("authorization")||""; return value.startsWith("Bearer ")?value.slice(7):""; }
 export function json(data:unknown,status=200){ return Response.json(data,{status,headers:{"Cache-Control":"no-store"}}); }
 
+function vector(value:BuildValue|undefined,fallback:number[]){
+  const values=Array.isArray(value)?value:typeof value==="string"?value.split(",").map(Number):[];
+  return values.length>=3&&!values.slice(0,3).some(value=>!Number.isFinite(Number(value)))?values.slice(0,3).map(Number):fallback;
+}
+function color(value:BuildValue|undefined){
+  if(typeof value==="string"&&/^#[0-9a-f]{6}$/i.test(value))return value.toUpperCase();
+  const rgb=typeof value==="string"?value.split(",").map(Number):Array.isArray(value)?value.map(Number):[];
+  if(rgb.length>=3&&!rgb.slice(0,3).some(Number.isNaN))return "#"+rgb.slice(0,3).map(channel=>Math.max(0,Math.min(255,Math.round(channel))).toString(16).padStart(2,"0")).join("").toUpperCase();
+  return "#A3A3A3";
+}
+function normalize(actions:BuildAction[]){
+  return actions.map((action,index)=>{
+    if(action.type!=="create_instance"||!["Part","SpawnLocation"].includes(action.className||""))return action;
+    const properties=action.properties||{},size=vector(properties.Size,[10,10,10]).map(value=>Math.max(.5,Math.min(160,Math.abs(value)||1)));
+    return {...action,properties:{...properties,Position:vector(properties.Position,[(index%5-2)*14,size[1]/2+1,(Math.floor(index/5)-2)*14]),Size:size,Color:color(properties.Color),Material:typeof properties.Material==="string"?properties.Material:"SmoothPlastic",Shape:typeof properties.Shape==="string"?properties.Shape:"Block",Rotation:vector(properties.Rotation,[0,0,0]),Anchored:true}};
+  });
+}
+
 export async function generateBlueprint(prompt:string):Promise<BuildAction[]> {
   const key=(env as unknown as {GEMINI_API_KEY?:string}).GEMINI_API_KEY;
   if(!key) throw new Error("GEMINI_API_KEY is not configured");
@@ -36,5 +54,5 @@ export async function generateBlueprint(prompt:string):Promise<BuildAction[]> {
   if(!raw) throw new Error("Gemini returned no blueprint");
   const actions=JSON.parse(raw) as BuildAction[];
   if(!Array.isArray(actions)||actions.length>36) throw new Error("Gemini returned an invalid blueprint");
-  return actions;
+  return normalize(actions);
 }
