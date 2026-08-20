@@ -1,7 +1,7 @@
 import { env } from "cloudflare:workers";
 
 export type BuildValue = string | number | boolean | number[];
-export type BuildAction = { id: string; type: "create_instance" | "create_script"; className?: string; name: string; parent: string; properties?: Record<string, BuildValue>; source?: string; summary: string };
+export type BuildAction = { id: string; type: "create_instance" | "create_script" | "import_asset"; className?: string; name: string; parent: string; properties?: Record<string, BuildValue>; source?: string; assetId?: number; summary: string };
 
 const schema = [
   `CREATE TABLE IF NOT EXISTS bridge_sessions (id TEXT PRIMARY KEY, pair_code TEXT UNIQUE NOT NULL, web_token_hash TEXT NOT NULL, plugin_token_hash TEXT, status TEXT NOT NULL DEFAULT 'waiting', request_count INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL, expires_at INTEGER NOT NULL)`,

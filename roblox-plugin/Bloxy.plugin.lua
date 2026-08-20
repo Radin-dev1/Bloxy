@@ -3,6 +3,7 @@
 
 local HttpService = game:GetService("HttpService")
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
+local InsertService = game:GetService("InsertService")
 
 local WEBSITE_URL = "https://YOUR-BLOXY-SITE.example"
 local toolbar = plugin:CreateToolbar("Bloxy")
@@ -84,6 +85,15 @@ local function applyJob()
 			local isClient=parent:IsDescendantOf(game:GetService("StarterPlayer")) or parent:IsDescendantOf(game:GetService("StarterGui"))
 			local className=isClient and "LocalScript" or "Script"
 			local scriptObject=Instance.new(className); scriptObject.Name=action.name; scriptObject.Source=action.source; scriptObject.Parent=parent
+		elseif action.type=="import_asset" then
+			local assetId=tonumber(action.assetId)
+			if not assetId or assetId<1 then error("Invalid Roblox asset ID") end
+			local container=InsertService:LoadAsset(assetId)
+			for _,descendant in ipairs(container:GetDescendants()) do
+				if descendant:IsA("LuaSourceContainer") then descendant:Destroy() end
+			end
+			for _,child in ipairs(container:GetChildren()) do child.Parent=parent end
+			container:Destroy()
 		end
 	end
 	ChangeHistoryService:SetWaypoint("Bloxy build applied")
