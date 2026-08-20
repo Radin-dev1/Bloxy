@@ -57,5 +57,13 @@ export async function generateBlueprint(prompt:string):Promise<BuildAction[]> {
   if(!raw) throw new Error("Gemini returned no blueprint");
   const actions=JSON.parse(raw) as BuildAction[];
   if(!Array.isArray(actions)||actions.length>36) throw new Error("Gemini returned an invalid blueprint");
-  return normalize(actions);
+  const draft=normalize(actions);
+  const critique=`You are Bloxy's senior Roblox build reviewer. Improve this draft before it reaches the viewport. Return only a replacement JSON array of at most 36 actions using the exact same schema. Preserve the user's intent and useful scripts. Check every item against this rubric: recognizable silhouette; correct Roblox scale; no accidental overlap; all parts above the baseplate; walkable routes at least 6 studs wide; reachable platforms; structural supports; coherent 3–5 color palette; deliberate material choices; layered detail rather than plain boxes; useful names and parent models. Fix weak geometry, sparse scenes, random placement, impossible jumps, missing frames/supports/details, and colors that fight each other. Do not add unsafe code or unsupported classes. User request: ${JSON.stringify(prompt)}. Draft: ${JSON.stringify(draft)}`;
+  try{
+    const reviewResponse=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify({contents:[{role:"user",parts:[{text:critique}]}],generationConfig:{temperature:.1,maxOutputTokens:8192,responseMimeType:"application/json"}})});
+    if(!reviewResponse.ok)return draft;
+    const reviewPayload=await reviewResponse.json() as {candidates?:Array<{content?:{parts?:Array<{text?:string}>}}>};
+    const reviewed=JSON.parse(reviewPayload.candidates?.[0]?.content?.parts?.[0]?.text||"null") as BuildAction[];
+    return Array.isArray(reviewed)&&reviewed.length<=36?normalize(reviewed):draft;
+  }catch{return draft;}
 }
