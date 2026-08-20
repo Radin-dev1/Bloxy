@@ -67,13 +67,20 @@ async function askAI(system:string,prompt:string,provider:AIProvider={}){
 }
 function parseActions(raw:string){const cleaned=raw.trim().replace(/^```(?:json)?\s*/i,"").replace(/\s*```$/,"");const parsed=JSON.parse(cleaned) as BuildAction[]|{actions?:BuildAction[]};return Array.isArray(parsed)?parsed:parsed.actions;}
 function weakDraftReason(actions:BuildAction[],prompt:string){
-  const wantsUI=/\b(ui|gui|hud|menu|inventory|shop|settings|interface)\b/i.test(prompt),uiClasses=new Set(["ScreenGui","Frame","ScrollingFrame","ImageLabel","ImageButton","TextLabel","TextButton","TextBox","UIListLayout","UIGridLayout","UIPadding","UICorner","UIStroke","UIAspectRatioConstraint"]);
+  const wantsUI=/\b(ui|gui|hud|menu|inventory|interface)\b/i.test(prompt),uiClasses=new Set(["ScreenGui","Frame","ScrollingFrame","ImageLabel","ImageButton","TextLabel","TextButton","TextBox","UIListLayout","UIGridLayout","UIPadding","UICorner","UIStroke","UIAspectRatioConstraint"]);
   const uiCount=actions.filter(action=>uiClasses.has(action.className||"")).length,partCount=actions.filter(action=>["Part","SpawnLocation"].includes(action.className||"")).length,issues:string[]=[];
   if(wantsUI&&uiCount<12)issues.push("The UI is too sparse to be a polished, game-ready interface.");
   if(!wantsUI&&partCount<18)issues.push("The environment is too sparse and reads like a blockout; use layered construction and environmental detail.");
   if(!actions.some(action=>action.className==="SpawnLocation")&&!wantsUI)issues.push("The experience has no deliberate player spawn.");
   if(/\b(shop|portal|door|button|hatch|quest|round|combat|obby|tycoon|simulator)\b/i.test(prompt)&&!actions.some(action=>action.type==="create_script"))issues.push("Interactive elements have no safe gameplay behavior.");
   return issues.join(" ");
+}
+function blueprintScore(actions:BuildAction[],prompt:string){
+  const wantsUI=/\b(ui|gui|hud|menu|inventory|interface)\b/i.test(prompt),parts=actions.filter(action=>["Part","SpawnLocation"].includes(action.className||"")).length,ui=actions.filter(action=>/^(ScreenGui|Frame|ScrollingFrame|ImageLabel|ImageButton|TextLabel|TextButton|TextBox|UI)/.test(action.className||"")).length;
+  let score=Math.min(parts,22)*2+Math.min(ui,20)+(actions.some(action=>action.className==="SpawnLocation")?8:0)+(actions.some(action=>action.type==="create_script")?8:0)+(actions.some(action=>action.type==="import_asset")?3:0);
+  if(wantsUI)score+=Math.min(ui,18)*2;
+  if(weakDraftReason(actions,prompt))score-=30;
+  return score;
 }
 
 export async function generateBlueprint(prompt:string,provider:AIProvider={}):Promise<BuildAction[]> {
@@ -84,18 +91,19 @@ export async function generateBlueprint(prompt:string,provider:AIProvider={}):Pr
   if(!raw) throw new Error("AI provider returned no blueprint");
   let actions=parseActions(raw);
   if(!Array.isArray(actions)||actions.length>36) throw new Error("AI provider returned an invalid blueprint");
-  const weakness=weakDraftReason(actions,prompt);
-  if(weakness){
+  let weakness=weakDraftReason(actions,prompt);
+  for(let attempt=0;attempt<2&&weakness;attempt++){
     try{
       raw=await askAI(system+assetInstruction+uiInstruction,`Rebuild this weak draft. Problem: ${weakness} Preserve the request but return a complete replacement JSON array. User request: ${JSON.stringify(prompt)} Weak draft: ${JSON.stringify(actions)}`,provider);
-      const repaired=parseActions(raw);if(Array.isArray(repaired)&&repaired.length<=36)actions=repaired;
+      const repaired=parseActions(raw);if(Array.isArray(repaired)&&repaired.length<=36&&blueprintScore(repaired,prompt)>=blueprintScore(actions,prompt))actions=repaired;
     }catch{}
+    weakness=weakDraftReason(actions,prompt);
   }
   const draft=normalize(actions);
   const critique=`You are Bloxy's senior Roblox build reviewer. Improve this draft before it reaches the viewport. Return only a replacement JSON array of at most 36 actions using the exact same schema. Preserve the user's intent and useful scripts. Check every item against this rubric: recognizable silhouette; correct Roblox scale; no accidental overlap; all parts above the baseplate; walkable routes at least 6 studs wide; reachable platforms; structural supports; coherent 3–5 color palette; deliberate material choices; layered detail rather than plain boxes; useful names and parent models. Fix weak geometry, sparse scenes, random placement, impossible jumps, missing frames/supports/details, and colors that fight each other. Do not add unsafe code or unsupported classes. User request: ${JSON.stringify(prompt)}. Draft: ${JSON.stringify(draft)}`;
   try{
     const qualityGate="Act like a shipping-quality Roblox art director. Before returning JSON, silently score the draft from 1-10 for silhouette, composition, route clarity, scale, theme consistency, asset usefulness, and gameplay readability. Rewrite anything scoring below 8. Imported models must have deliberate Position, Rotation and Scale and must not replace playable geometry. Remove redundant parts, placeholder blocks, irrelevant assets, unsafe scripts, and accidental intersections. Ensure the first 10 seconds from SpawnLocation reveal a focal landmark and an obvious next destination. ";
-    const reviewed=parseActions(await askAI("Return only valid JSON.",qualityGate+critique,provider));
-    return Array.isArray(reviewed)&&reviewed.length<=36?normalize(reviewed):draft;
+    const reviewed=parseActions(await askAI("Return only valid JSON.",qualityGate+critique,provider)),reviewedDraft=Array.isArray(reviewed)&&reviewed.length<=36?normalize(reviewed):[];
+    return reviewedDraft.length&&blueprintScore(reviewedDraft,prompt)>=blueprintScore(draft,prompt)?reviewedDraft:draft;
   }catch{return draft;}
 }
