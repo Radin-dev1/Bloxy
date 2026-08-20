@@ -68,11 +68,12 @@ async function askAI(system:string,prompt:string,provider:AIProvider={}){
 function parseActions(raw:string){const cleaned=raw.trim().replace(/^```(?:json)?\s*/i,"").replace(/\s*```$/,"");const parsed=JSON.parse(cleaned) as BuildAction[]|{actions?:BuildAction[]};return Array.isArray(parsed)?parsed:parsed.actions;}
 function weakDraftReason(actions:BuildAction[],prompt:string){
   const wantsUI=/\b(ui|gui|hud|menu|inventory|shop|settings|interface)\b/i.test(prompt),uiClasses=new Set(["ScreenGui","Frame","ScrollingFrame","ImageLabel","ImageButton","TextLabel","TextButton","TextBox","UIListLayout","UIGridLayout","UIPadding","UICorner","UIStroke","UIAspectRatioConstraint"]);
-  const uiCount=actions.filter(action=>uiClasses.has(action.className||"")).length,partCount=actions.filter(action=>["Part","SpawnLocation"].includes(action.className||"")).length;
-  if(wantsUI&&uiCount<8)return "The UI is too sparse to be a polished, game-ready interface.";
-  if(!wantsUI&&partCount<10)return "The environment is too sparse and reads like a blockout.";
-  if(!actions.some(action=>action.className==="SpawnLocation")&&!wantsUI)return "The experience has no deliberate player spawn.";
-  return "";
+  const uiCount=actions.filter(action=>uiClasses.has(action.className||"")).length,partCount=actions.filter(action=>["Part","SpawnLocation"].includes(action.className||"")).length,issues:string[]=[];
+  if(wantsUI&&uiCount<12)issues.push("The UI is too sparse to be a polished, game-ready interface.");
+  if(!wantsUI&&partCount<18)issues.push("The environment is too sparse and reads like a blockout; use layered construction and environmental detail.");
+  if(!actions.some(action=>action.className==="SpawnLocation")&&!wantsUI)issues.push("The experience has no deliberate player spawn.");
+  if(/\b(shop|portal|door|button|hatch|quest|round|combat|obby|tycoon|simulator)\b/i.test(prompt)&&!actions.some(action=>action.type==="create_script"))issues.push("Interactive elements have no safe gameplay behavior.");
+  return issues.join(" ");
 }
 
 export async function generateBlueprint(prompt:string,provider:AIProvider={}):Promise<BuildAction[]> {
