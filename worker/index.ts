@@ -28,6 +28,10 @@ interface ExecutionContext {
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+    const origin=request.headers.get("Origin")||"";
+    const allowedOrigin=origin==="https://radin-dev1.github.io"||origin.startsWith("http://localhost:")?origin:"";
+    const corsHeaders={"Access-Control-Allow-Origin":allowedOrigin,"Access-Control-Allow-Headers":"Authorization, Content-Type","Access-Control-Allow-Methods":"GET, POST, OPTIONS","Vary":"Origin"};
+    if(request.method==="OPTIONS"&&allowedOrigin)return new Response(null,{status:204,headers:corsHeaders});
 
     if (url.pathname === "/_vinext/image") {
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];
@@ -40,7 +44,10 @@ const worker = {
       }, allowedWidths);
     }
 
-    return handler.fetch(request, env, ctx);
+    const response=await handler.fetch(request, env, ctx);
+    if(!allowedOrigin)return response;
+    const headers=new Headers(response.headers);Object.entries(corsHeaders).forEach(([key,value])=>headers.set(key,value));
+    return new Response(response.body,{status:response.status,statusText:response.statusText,headers});
   },
 };
 
