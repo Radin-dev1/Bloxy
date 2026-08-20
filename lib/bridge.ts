@@ -54,7 +54,9 @@ async function askAI(system:string,prompt:string,provider:AIProvider={}){
   if(!key)throw new Error(id==="bloxy"?"GEMINI_API_KEY is not configured":"Add your provider API key in AI Providers");
   if(id==="bloxy"||id==="gemini"){
     const model=(provider.model||"gemini-3.1-pro-preview").replace(/[^a-zA-Z0-9._-]/g,"");
-    const response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify({system_instruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{temperature:.15,maxOutputTokens:8192,responseMimeType:"application/json"}})});
+    const request={method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify({system_instruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{temperature:.15,maxOutputTokens:8192,responseMimeType:"application/json"}})};
+    let response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,request);
+    if(!response.ok&&id==="bloxy"&&model==="gemini-3.1-pro-preview")response=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent",request);
     if(!response.ok)throw new Error(`AI provider request failed (${response.status})`);
     const payload=await response.json() as {candidates?:Array<{content?:{parts?:Array<{text?:string}>}}>};
     return payload.candidates?.[0]?.content?.parts?.[0]?.text||"";
