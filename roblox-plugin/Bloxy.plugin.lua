@@ -48,7 +48,14 @@ end
 
 local function resolveParent(path)
 	local pieces=string.split(path or "Workspace",".")
-	local current=allowedRoots[table.remove(pieces,1)]
+	local first=table.remove(pieces,1)
+	local current=allowedRoots[first]
+	if not current then
+		for _,rootService in pairs(allowedRoots) do
+			current=rootService:FindFirstChild(first,true)
+			if current then break end
+		end
+	end
 	if not current then return nil end
 	for _,name in ipairs(pieces) do current=current:FindFirstChild(name); if not current then return nil end end
 	return current
@@ -67,11 +74,21 @@ local function colorFromHex(value)
 	return Color3.fromRGB(tonumber(string.sub(hex,1,2),16) or 255,tonumber(string.sub(hex,3,4),16) or 255,tonumber(string.sub(hex,5,6),16) or 255)
 end
 
+local function numbers(value)
+	if typeof(value)=="table" then return value end
+	if typeof(value)=="string" then
+		local output={}
+		for _,piece in ipairs(string.split(value,",")) do table.insert(output,tonumber(string.gsub(piece,"%s","")) or 0) end
+		return output
+	end
+	return {}
+end
+
 local function applyProperty(object,property,value)
 	if property=="SearchQuery" or property=="Scale" then return end
 	if object:IsA("BasePart") then
-		if (property=="Position" or property=="Size") and typeof(value)=="table" then object[property]=Vector3.new(tonumber(value[1]) or 0,tonumber(value[2]) or 0,tonumber(value[3]) or 0); return end
-		if property=="Rotation" and typeof(value)=="table" then object.Orientation=Vector3.new(tonumber(value[1]) or 0,tonumber(value[2]) or 0,tonumber(value[3]) or 0); return end
+		if property=="Position" or property=="Size" then local v=numbers(value); object[property]=Vector3.new(tonumber(v[1]) or 0,tonumber(v[2]) or 0,tonumber(v[3]) or 0); return end
+		if property=="Rotation" then local v=numbers(value); object.Orientation=Vector3.new(tonumber(v[1]) or 0,tonumber(v[2]) or 0,tonumber(v[3]) or 0); return end
 		if property=="Color" then object.Color=colorFromHex(value); return end
 		if property=="Material" and typeof(value)=="string" and Enum.Material[value] then object.Material=Enum.Material[value]; return end
 		if property=="Shape" then
@@ -80,8 +97,8 @@ local function applyProperty(object,property,value)
 		end
 	end
 	if object:IsA("GuiObject") then
-		if (property=="Position" or property=="Size") and typeof(value)=="table" then object[property]=UDim2.new(tonumber(value[1]) or 0,tonumber(value[2]) or 0,tonumber(value[3]) or 0,tonumber(value[4]) or 0); return end
-		if property=="AnchorPoint" and typeof(value)=="table" then object.AnchorPoint=Vector2.new(tonumber(value[1]) or 0,tonumber(value[2]) or 0); return end
+		if property=="Position" or property=="Size" then local v=numbers(value); object[property]=UDim2.new(tonumber(v[1]) or 0,tonumber(v[2]) or 0,tonumber(v[3]) or 0,tonumber(v[4]) or 0); return end
+		if property=="AnchorPoint" then local v=numbers(value); object.AnchorPoint=Vector2.new(tonumber(v[1]) or 0,tonumber(v[2]) or 0); return end
 	end
 	if (property=="BackgroundColor3" or property=="TextColor3" or property=="ImageColor3" or property=="Color") and typeof(value)=="string" then object[property]=colorFromHex(value); return end
 	if property=="Font" and typeof(value)=="string" and Enum.Font[value] then object.Font=Enum.Font[value]; return end
@@ -91,7 +108,7 @@ local function applyProperty(object,property,value)
 	if property=="HorizontalAlignment" and typeof(value)=="string" and Enum.HorizontalAlignment[value] then object.HorizontalAlignment=Enum.HorizontalAlignment[value]; return end
 	if property=="VerticalAlignment" and typeof(value)=="string" and Enum.VerticalAlignment[value] then object.VerticalAlignment=Enum.VerticalAlignment[value]; return end
 	if property=="SortOrder" and typeof(value)=="string" and Enum.SortOrder[value] then object.SortOrder=Enum.SortOrder[value]; return end
-	if (property=="CornerRadius" or property=="Padding" or string.find(property,"Padding")) and typeof(value)=="table" then object[property]=UDim.new(tonumber(value[1]) or 0,tonumber(value[2]) or 0); return end
+	if property=="CornerRadius" or property=="Padding" or string.find(property,"Padding") then local v=numbers(value); object[property]=UDim.new(tonumber(v[1]) or 0,tonumber(v[2]) or 0); return end
 	object[property]=value
 end
 
