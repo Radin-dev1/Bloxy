@@ -5,13 +5,16 @@ import {searchCreatorModels} from "../roblox-assets/search/route";
 async function resolveCreatorModels(actions:Awaited<ReturnType<typeof generateBlueprint>>){
   let imports=0;
   return Promise.all(actions.map(async action=>{
-    if(action.type!=="import_asset"||action.assetId||imports>=3)return action;
+    if(action.type!=="import_asset"||action.assetId||imports>=4)return action;
     const query=typeof action.properties?.SearchQuery==="string"?action.properties.SearchQuery.trim():"";
     if(query.length<2)return null;
     imports++;
     try{
       const [match]=await searchCreatorModels(query,3);
-      return match?{...action,assetId:match.id,name:match.name,summary:`Verified Creator Store model by ${match.creator}: ${match.name}. Embedded scripts will be removed.`}:null;
+      const rawPosition=action.properties?.Position,position=Array.isArray(rawPosition)&&rawPosition.length>=3?rawPosition.slice(0,3).map(Number):[18+imports*9,1,12];
+      const rawRotation=action.properties?.Rotation,rotation=Array.isArray(rawRotation)&&rawRotation.length>=3?rawRotation.slice(0,3).map(Number):[0,imports*35,0];
+      const scale=Math.max(.25,Math.min(4,Number(action.properties?.Scale)||1));
+      return match?{...action,assetId:match.id,name:match.name,properties:{...action.properties,Position:position,Rotation:rotation,Scale:scale},summary:`Verified Creator Store model by ${match.creator}: ${match.name}. Embedded scripts will be removed.`}:null;
     }catch{return null;}
   })).then(items=>items.filter((item):item is NonNullable<typeof item>=>Boolean(item)));
 }

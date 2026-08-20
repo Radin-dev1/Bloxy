@@ -92,8 +92,16 @@ local function applyJob()
 			for _,descendant in ipairs(container:GetDescendants()) do
 				if descendant:IsA("LuaSourceContainer") then descendant:Destroy() end
 			end
-			for _,child in ipairs(container:GetChildren()) do child.Parent=parent end
-			container:Destroy()
+			container.Name=action.name or ("CreatorAsset_"..assetId)
+			container.Parent=parent
+			local properties=action.properties or {}
+			local scale=math.clamp(tonumber(properties.Scale) or 1,0.25,4)
+			pcall(function() container:ScaleTo(scale) end)
+			local position=properties.Position or {0,1,0}
+			local rotation=properties.Rotation or {0,0,0}
+			local px,py,pz=tonumber(position[1]) or 0,tonumber(position[2]) or 1,tonumber(position[3]) or 0
+			local rx,ry,rz=math.rad(tonumber(rotation[1]) or 0),math.rad(tonumber(rotation[2]) or 0),math.rad(tonumber(rotation[3]) or 0)
+			pcall(function() container:PivotTo(CFrame.new(px,py,pz)*CFrame.Angles(rx,ry,rz)) end)
 		end
 	end
 	ChangeHistoryService:SetWaypoint("Bloxy build applied")
