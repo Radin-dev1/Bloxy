@@ -1,9 +1,209 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="theme-color" content="#f4f6f8"><meta name="apple-mobile-web-app-title" content="Bloxy"><meta name="description" content="Create game-ready Roblox worlds, scripts, UI, and 3D assets in one browser workspace."><meta property="og:title" content="Bloxy — Game-ready Roblox builds through play"><meta property="og:description" content="Build, inspect, generate, and deliver Roblox creations from one browser workspace."><meta name="twitter:card" content="summary"><title>Bloxy — Game-ready Roblox builds through play</title><link rel="icon" href="bloxy-logo.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="bloxy-logo.svg"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet"><script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script><style>
-:root{--canvas:#f4f6f8;--paper:#fff;--ink:#161a1e;--muted:#68717a;--line:#dce1e5;--blue:#718fab;--blue-dark:#587792;--dark:#171b22;--display:"Manrope",sans-serif;--body:"DM Sans",sans-serif;--mono:"Roboto Mono",monospace;--ease:cubic-bezier(.16,1,.3,1)}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--body)}a{color:inherit;text-decoration:none}.wrap{width:min(1180px,calc(100% - 40px));margin:auto}.nav{position:sticky;top:0;z-index:30;height:72px;border-bottom:1px solid #cfd6dbcc;background:#f4f6f8e8;backdrop-filter:blur(18px)}.nav .wrap{height:100%;display:flex;align-items:center;gap:30px}.brand{display:flex;align-items:center;gap:10px;margin-right:auto;font:800 20px var(--display)}.brand img{width:36px}.navlinks{display:flex;gap:24px;color:#59636c;font-size:13px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border:1px solid #cbd2d7;border-radius:10px;background:white;font-weight:700;transition:.2s var(--ease)}.btn:hover{transform:translateY(-2px);border-color:#98a7b3}.btn.primary{border-color:var(--dark);background:var(--dark);color:white}.btn svg{width:17px}.hero{padding:110px 0 78px;text-align:center}.hero h1,.features h2,.proof-copy h2,.faq h2,.final h2{font-family:var(--display);letter-spacing:-.055em}.hero h1{max-width:980px;margin:0 auto;font-size:clamp(52px,8vw,94px);line-height:.97}.hero h1 span{color:var(--blue-dark)}.hero p{max-width:650px;margin:26px auto;color:var(--muted);font-size:19px;line-height:1.6}.hero .btn{min-height:50px;padding:0 22px}.hero-note{margin-top:13px;color:#7a838b;font-size:11px}.proof{width:min(1280px,calc(100% - 24px));margin:auto;padding:10px;border:1px solid #c7ced3;border-radius:20px;background:#e5e9ec;box-shadow:0 34px 90px #2d445526}.proof-bar{height:42px;display:flex;align-items:center;gap:7px;padding:0 8px;color:#737d86;font:500 9px var(--mono)}.proof-bar i{width:9px;height:9px;border-radius:50%;background:#bbc3c9}.proof-bar span{margin:auto}.proof iframe{display:block;width:100%;height:min(760px,76vh);border:0;border-radius:12px;background:#151820}.proof-caption{display:flex;justify-content:space-between;gap:20px;padding:16px 6px 7px;color:#56616a;font-size:12px}.proof-caption b{color:var(--ink)}.features{padding:110px 0}.features>h2,.faq h2{max-width:780px;margin:0 0 45px;font-size:clamp(40px,5vw,64px);line-height:1}.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.feature{min-height:210px;padding:26px;border:1px solid var(--line);border-radius:15px;background:var(--paper)}.feature-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:11px;background:#e9eff4;color:var(--blue-dark)}.feature-icon svg{width:20px}.feature h3{margin:32px 0 8px;font:700 20px var(--display);letter-spacing:-.03em}.feature p{margin:0;color:var(--muted);font-size:14px;line-height:1.6}.product-stories{border-block:1px solid var(--line);background:white}.proof-row{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:70px;padding:105px 0;border-bottom:1px solid var(--line)}.proof-row:last-child{border:0}.proof-row:nth-child(even) .proof-copy{order:2}.proof-visual{overflow:hidden;border:1px solid #cad2d8;border-radius:18px;background:#e8ecef;box-shadow:0 24px 60px #314c6020}.proof-visual img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover}.proof-copy h2{margin:0 0 18px;font-size:clamp(38px,4.5vw,58px);line-height:1.02}.proof-copy p{max-width:480px;margin:0;color:var(--muted);font-size:17px;line-height:1.7}.proof-copy a{display:inline-flex;align-items:center;gap:7px;margin-top:22px;color:var(--blue-dark);font-weight:700}.proof-copy a svg{width:16px}.faq{padding:110px 0}.faq-list{max-width:880px}.faq details{border-top:1px solid var(--line);padding:23px 0}.faq summary{cursor:pointer;list-style:none;font:700 18px var(--display)}.faq summary:after{content:"+";float:right;color:var(--blue-dark)}.faq details[open] summary:after{content:"−"}.faq p{max-width:760px;color:var(--muted);line-height:1.7}.final{margin:30px auto 40px;padding:80px 30px;border-radius:22px;background:var(--dark);color:white;text-align:center}.final h2{max-width:780px;margin:0 auto 28px;font-size:clamp(42px,6vw,70px);line-height:1}.final .btn{background:white;color:var(--dark)}.footer{display:flex;justify-content:space-between;gap:30px;padding:35px 0 50px;color:#707981;font-size:12px}.footer div{display:flex;gap:20px}@media(max-width:900px){.navlinks{display:none}.feature-grid{grid-template-columns:repeat(2,1fr)}.proof-row{grid-template-columns:1fr;gap:34px}.proof-row:nth-child(even) .proof-copy{order:0}.proof iframe{height:680px}}@media(max-width:620px){.wrap{width:calc(100% - 24px)}.nav .btn span{display:none}.hero{padding:75px 0 55px}.hero h1{font-size:52px}.hero p{font-size:17px}.proof{width:calc(100% - 10px);padding:5px}.proof iframe{height:620px}.proof-caption{display:block}.proof-caption span{display:block;margin-top:5px}.feature-grid{grid-template-columns:1fr}.proof-row{padding:72px 0}.footer{display:block}.footer div{margin-top:15px}}
-</style></head><body><nav class="nav"><div class="wrap"><a class="brand" href="#"><img src="bloxy-logo.svg" alt="">Bloxy</a><div class="navlinks"><a href="#workspace">Workspace</a><a href="#features">Capabilities</a><a href="#faq">FAQ</a><a href="https://github.com/Radin-dev1/Bloxy">GitHub</a></div><a class="btn primary" href="workspace/"><span>Open workspace</span><i data-lucide="arrow-up-right"></i></a></div></nav><main>
-<section class="hero wrap"><h1>Game-ready Roblox builds, <span>created through play.</span></h1><p>Build worlds, generate textured assets, edit properties, and review Studio-ready blueprints in one browser workspace.</p><a class="btn primary" href="workspace/">Start building<i data-lucide="arrow-right"></i></a><div class="hero-note">Open beta · 25 starter Bits · no installation required for the web editor</div></section>
-<section class="proof" id="workspace"><div class="proof-bar"><i></i><i></i><i></i><span>INTERACTIVE PRODUCT</span></div><iframe src="workspace/?embed=1" title="Interactive Bloxy 3D workspace" loading="eager"></iframe><div class="proof-caption"><b>This is the product—not a mockup.</b><span>Orbit, select, edit properties, generate with Gemini or Tripo, and open every tool panel.</span></div></section>
-<section class="features wrap" id="features"><h2>Everything needed to move from an idea to a Roblox build.</h2><div class="feature-grid"><article class="feature"><span class="feature-icon"><i data-lucide="boxes"></i></span><h3>Build complete scenes</h3><p>Gemini plans scale, paths, materials, structure, scripts, and recognizable multi-part models.</p></article><article class="feature"><span class="feature-icon"><i data-lucide="scan-line"></i></span><h3>Generate real 3D assets</h3><p>Turn text, reference images, and browser doodles into textured GLB models with Tripo.</p></article><article class="feature"><span class="feature-icon"><i data-lucide="sliders-horizontal"></i></span><h3>Edit every object</h3><p>Change material, color, size, collision, anchoring, position, rotation, and scale.</p></article><article class="feature"><span class="feature-icon"><i data-lucide="library"></i></span><h3>Use Roblox assets</h3><p>Search verified Creator Store models and queue approved imports for Studio.</p></article><article class="feature"><span class="feature-icon"><i data-lucide="panel-top"></i></span><h3>Create the interface</h3><p>Add HUD elements, image references, audio cues, and world styles without leaving the canvas.</p></article><article class="feature"><span class="feature-icon"><i data-lucide="shield-check"></i></span><h3>Review before delivery</h3><p>Pair Studio only when ready. Imported Creator Store scripts are removed before insertion.</p></article></div></section>
-<section class="product-stories"><div class="wrap"><article class="proof-row"><div class="proof-copy"><h2>Describe the world. Then shape it directly.</h2><p>Bloxy turns a request into deliberate Roblox parts rather than scattering placeholder blocks. Select the result, change its properties, undo transforms, or switch to a clean preview.</p><a href="workspace/">Open the scene builder<i data-lucide="arrow-right"></i></a></div><div class="proof-visual"><img src="images/bloxy-ai-world-builder.webp" alt="Roblox-style world concept generated for Bloxy" loading="lazy"></div></article><article class="proof-row"><div class="proof-copy"><h2>Generate assets from text or a doodle.</h2><p>Choose Asset mode, describe one object, or sketch its silhouette. Bloxy uses its private backend and loads the textured GLB into the viewport.</p><a href="workspace/">Generate a 3D asset<i data-lucide="arrow-right"></i></a></div><div class="proof-visual"><img src="images/bloxy-3d-assets.webp" alt="Roblox-style 3D assets created for Bloxy" loading="lazy"></div></article><article class="proof-row"><div class="proof-copy"><h2>Keep delivery separate from generation.</h2><p>Every blueprint remains reviewable on the web. Pair the Studio plugin when the build is ready, inspect the proposed actions, and approve them from inside Studio.</p><a href="workspace/">See the delivery workflow<i data-lucide="arrow-right"></i></a></div><div class="proof-visual"><img src="images/bloxy-game-lobby.webp" alt="A Roblox-style lobby concept made with Bloxy" loading="lazy"></div></article></div></section>
-<section class="faq wrap" id="faq"><h2>Questions, answered without the sales pitch.</h2><div class="faq-list"><details><summary>Is the workspace actually interactive?</summary><p>Yes. It uses Three.js with orbit controls, selection, transforms, a real properties inspector, working tool panels, undo and redo, and live generated geometry.</p></details><details><summary>What does Gemini do?</summary><p>Gemini creates a Roblox action blueprint, then a second review pass checks scale, paths, collisions, structure, color, materials, and detail.</p></details><details><summary>What does Tripo do?</summary><p>Tripo handles text-to-3D and image-to-3D generation. Completed textured GLB models load into the viewport and can be downloaded.</p></details><details><summary>Can Bloxy search real Roblox assets?</summary><p>Yes. The Assets panel searches the official Creator Store and filters for verified creators.</p></details><details><summary>Does generation modify my Studio project?</summary><p>No. Pairing and approval are separate steps. Web generation does not automatically change your Roblox project.</p></details><details><summary>How are Creator Store models handled?</summary><p>You review the asset first. During Studio import, Bloxy removes embedded Lua source containers before placing the model.</p></details><details><summary>Where are my API keys stored?</summary><p>Gemini and Tripo keys are encrypted Cloudflare secrets. They are not shipped in GitHub Pages or exposed to Roblox Studio.</p></details><details><summary>What can I edit?</summary><p>Name, material, color, size, Anchored, and CanCollide are editable. Move, rotate, and scale tools operate directly on selected objects.</p></details><details><summary>How do Bits work?</summary><p>Blueprint generation costs 1 Bit and textured Tripo generation costs 6 Bits. New sessions begin with 25 starter Bits.</p></details><details><summary>Does it work on mobile?</summary><p>The layout adapts to smaller screens and touch input, although a larger screen remains better for detailed 3D editing.</p></details><details><summary>Is Bloxy affiliated with Roblox?</summary><p>No. Bloxy is an independent creator tool and is not endorsed by Roblox Corporation.</p></details></div></section>
-<section class="final wrap"><h2>Start with a baseplate. Leave with a build.</h2><a class="btn" href="workspace/">Open Bloxy workspace<i data-lucide="arrow-right"></i></a></section></main><footer class="footer wrap"><span>© 2026 Bloxy · Independent Roblox creator tool.</span><div><a href="https://github.com/Radin-dev1/Bloxy">Source</a><a href="https://github.com/Radin-dev1/Bloxy/issues">Feedback</a><a href="#faq">FAQ</a></div></footer><script>lucide.createIcons()</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fa">
+  <meta name="description" content="Build Roblox worlds, generate textured 3D assets, and deliver approved creations to Studio from one browser workspace.">
+  <meta property="og:title" content="Bloxy — Your Roblox game starts here">
+  <meta property="og:description" content="A real 3D workspace for building Roblox worlds with Gemini, Tripo, and your own direction.">
+  <title>Bloxy — Your Roblox game starts here</title>
+  <link rel="icon" href="bloxy-logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=Roboto+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header" id="top">
+    <nav class="shell nav" aria-label="Main navigation">
+      <a class="brand" href="#top" aria-label="Bloxy home">
+        <span class="brand-mark" aria-hidden="true"><i data-lucide="box"></i></span>
+        <span>Bloxy</span>
+      </a>
+      <div class="nav-links">
+        <a href="#product">Product</a>
+        <a href="#workflow">How it works</a>
+        <a href="#questions">Questions</a>
+      </div>
+      <div class="nav-actions">
+        <a class="text-link" href="https://github.com/Radin-dev1/Bloxy" target="_blank" rel="noopener">GitHub</a>
+        <a class="button button-dark button-small" href="workspace/">Open workspace <i data-lucide="arrow-up-right"></i></a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero shell" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <span class="release"><i></i> Open beta · build in your browser</span>
+        <h1 id="hero-title">Make the Roblox game you can already <em>see.</em></h1>
+        <p>Describe a world, shape it in a real 3D canvas, generate textured assets, and send only the build you approve to Roblox Studio.</p>
+        <div class="hero-actions">
+          <a class="button button-coral" href="workspace/">Start with a baseplate <i data-lucide="arrow-right"></i></a>
+          <a class="inline-action" href="#workflow">See how generation works <i data-lucide="chevron-down"></i></a>
+        </div>
+        <ul class="hero-proof" aria-label="Product highlights">
+          <li><i data-lucide="mouse-pointer-2"></i><span><b>Direct editing</b> in the viewport</span></li>
+          <li><i data-lucide="scan-line"></i><span><b>Text and doodle</b> to textured 3D</span></li>
+          <li><i data-lucide="shield-check"></i><span><b>You approve</b> every Studio delivery</span></li>
+        </ul>
+      </div>
+
+      <div class="world-stage" aria-label="Live Bloxy workspace preview">
+        <div class="world-glow"></div>
+        <div class="world-window">
+          <div class="window-bar">
+            <span class="window-brand"><span class="brand-mark brand-mark-mini" aria-hidden="true"><i data-lucide="box"></i></span> Untitled Experience</span>
+            <span class="window-state"><i></i> LIVE CANVAS</span>
+            <div class="window-actions">
+              <button id="refreshPreview" type="button" aria-label="Restart workspace preview" title="Restart preview"><i data-lucide="rotate-ccw"></i></button>
+              <a href="workspace/" aria-label="Open full workspace" title="Open full workspace"><i data-lucide="maximize-2"></i></a>
+            </div>
+          </div>
+          <iframe id="workspacePreview" src="workspace/?embed=1" title="Interactive Bloxy 3D workspace" loading="eager"></iframe>
+        </div>
+        <div class="world-caption">
+          <span><i data-lucide="move-3d"></i> Drag to orbit</span>
+          <strong>Real WebGL workspace. Not a screenshot.</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="truth-strip" aria-label="Bloxy capabilities">
+      <div class="shell truth-grid">
+        <span>One workspace</span>
+        <b>Worlds</b><i></i><b>3D assets</b><i></i><b>Luau</b><i></i><b>UI</b><i></i><b>Studio delivery</b>
+      </div>
+    </section>
+
+    <section class="product shell" id="product" aria-labelledby="product-title">
+      <div class="section-heading">
+        <span class="section-index">01 / THE PRODUCT</span>
+        <h2 id="product-title">A builder that gives you something to shape—not another answer to copy.</h2>
+        <p>Bloxy keeps generation and editing in the same place, so the next move is always visible.</p>
+      </div>
+
+      <div class="product-grid">
+        <article class="product-card product-card-wide">
+          <div class="card-copy">
+            <span class="card-icon"><i data-lucide="land-plot"></i></span>
+            <h3>Build the whole scene</h3>
+            <p>Gemini plans recognizable structures, paths, scale, materials, and systems. The result appears in the canvas so you can select and change it.</p>
+            <a href="workspace/">Try scene generation <i data-lucide="arrow-up-right"></i></a>
+          </div>
+          <img src="images/bloxy-game-lobby.webp" alt="A bright Roblox-style lobby with portals and paths" loading="lazy">
+        </article>
+
+        <article class="product-card product-card-tall">
+          <img src="images/bloxy-3d-assets.webp" alt="A set of Roblox-style 3D game assets" loading="lazy">
+          <div class="card-copy">
+            <span class="card-icon"><i data-lucide="scan-line"></i></span>
+            <h3>Turn an idea into a real asset</h3>
+            <p>Use text, an image, or your own doodle. Tripo returns a textured GLB that loads directly into your world.</p>
+            <a href="workspace/">Generate an asset <i data-lucide="arrow-up-right"></i></a>
+          </div>
+        </article>
+
+        <article class="product-card product-card-detail">
+          <div class="property-demo" aria-hidden="true">
+            <div class="property-head"><span>SELECTED</span><b>PortalFrame</b></div>
+            <label><span>Material</span><output>Neon</output></label>
+            <label><span>Color</span><output><i></i>#27C7FF</output></label>
+            <label><span>Size</span><output>18 &nbsp; 24 &nbsp; 4</output></label>
+            <label class="toggle-line"><span>Anchored</span><output>ON</output></label>
+            <label class="toggle-line"><span>CanCollide</span><output>ON</output></label>
+          </div>
+          <div class="card-copy">
+            <span class="card-icon"><i data-lucide="sliders-horizontal"></i></span>
+            <h3>Keep control after AI</h3>
+            <p>Select objects, edit real properties, transform them, undo changes, and preview the scene cleanly.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="workflow" id="workflow" aria-labelledby="workflow-title">
+      <div class="shell workflow-shell">
+        <div class="section-heading section-heading-light">
+          <span class="section-index">02 / FROM PROMPT TO STUDIO</span>
+          <h2 id="workflow-title">Generation is the start of the work—not the end.</h2>
+        </div>
+        <ol class="workflow-steps">
+          <li><span>01</span><i data-lucide="message-square-text"></i><h3>Direct it</h3><p>Describe the game, system, or single asset you want.</p></li>
+          <li><span>02</span><i data-lucide="sparkles"></i><h3>Generate it</h3><p>Bloxy chooses the scene or 3D pipeline and builds in context.</p></li>
+          <li><span>03</span><i data-lucide="move-3d"></i><h3>Shape it</h3><p>Orbit, select, move, resize, recolor, and inspect the result.</p></li>
+          <li><span>04</span><i data-lucide="plug-zap"></i><h3>Approve it</h3><p>Pair the plugin and deliver the reviewed build to Studio.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="showcase shell">
+      <div class="showcase-image">
+        <img src="images/bloxy-ai-world-builder.webp" alt="A Roblox-style fortress world being built from blueprints" loading="lazy">
+        <span>WORLD DIRECTION</span>
+      </div>
+      <div class="showcase-copy">
+        <span class="section-index">03 / BUILT FOR ITERATION</span>
+        <h2>Ask for the world. Then keep pushing it.</h2>
+        <p>Good Roblox games are made through passes. Bloxy keeps the scene, the prompt, the asset tools, and the delivery step connected so you can keep refining instead of restarting.</p>
+        <div class="showcase-list">
+          <span><i data-lucide="check"></i> Infinite-looking Roblox baseplate</span>
+          <span><i data-lucide="check"></i> Gemini scene planning and review</span>
+          <span><i data-lucide="check"></i> Tripo textured 3D generation</span>
+          <span><i data-lucide="check"></i> Verified Creator Store search</span>
+        </div>
+        <a class="button button-dark" href="workspace/">Build in the workspace <i data-lucide="arrow-right"></i></a>
+      </div>
+    </section>
+
+    <section class="questions shell" id="questions" aria-labelledby="questions-title">
+      <div class="section-heading question-heading">
+        <span class="section-index">04 / STRAIGHT ANSWERS</span>
+        <h2 id="questions-title">Before you build.</h2>
+      </div>
+      <div class="question-list">
+        <details><summary>Is the workspace actually interactive? <i data-lucide="plus"></i></summary><p>Yes. It is a Three.js workspace with orbit controls, selection, transforms, a property editor, working tool panels, undo and redo, and live generated geometry.</p></details>
+        <details><summary>What do Gemini and Tripo each do? <i data-lucide="plus"></i></summary><p>Gemini plans Roblox scenes and action blueprints. Tripo handles text-to-3D and image-to-3D, returning textured GLB models for the viewport.</p></details>
+        <details><summary>Does Bloxy change my Studio project automatically? <i data-lucide="plus"></i></summary><p>No. Web generation and Studio delivery are separate. You pair the plugin and approve the build before delivery.</p></details>
+        <details><summary>Where are the API keys stored? <i data-lucide="plus"></i></summary><p>Provider keys belong in encrypted Cloudflare secrets. They are not placed in the GitHub Pages frontend or sent to Roblox Studio.</p></details>
+        <details><summary>Is Bloxy affiliated with Roblox? <i data-lucide="plus"></i></summary><p>No. Bloxy is an independent creator tool and is not endorsed by Roblox Corporation.</p></details>
+      </div>
+    </section>
+
+    <section class="closing shell">
+      <div>
+        <span class="release release-dark"><i></i> YOUR BASEPLATE IS READY</span>
+        <h2>Stop describing the game in tabs. Start moving through it.</h2>
+      </div>
+      <a class="button button-coral" href="workspace/">Open Bloxy <i data-lucide="arrow-up-right"></i></a>
+    </section>
+  </main>
+
+  <footer class="footer shell">
+    <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><i data-lucide="box"></i></span><span>Bloxy</span></a>
+    <p>Independent AI building tools for Roblox creators.</p>
+    <div>
+      <a href="https://github.com/Radin-dev1/Bloxy" target="_blank" rel="noopener">Source</a>
+      <a href="https://github.com/Radin-dev1/Bloxy/issues" target="_blank" rel="noopener">Feedback</a>
+      <a href="#questions">Questions</a>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+    const preview = document.getElementById('workspacePreview');
+    document.getElementById('refreshPreview').addEventListener('click', () => {
+      const url = new URL(preview.src, location.href);
+      url.searchParams.set('restart', Date.now());
+      preview.src = url;
+    });
+    const header = document.querySelector('.site-header');
+    const updateHeader = () => header.classList.toggle('scrolled', scrollY > 10);
+    updateHeader();
+    addEventListener('scroll', updateHeader, { passive: true });
+  </script>
+</body>
+</html>
