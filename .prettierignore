@@ -1,0 +1,11 @@
+node_modules
+.next
+dist
+.wrangler
+drizzle/meta
+package-lock.json
+pnpm-lock.yaml
+public
+landing/faces
+landing/images
+landing/workspace/assets

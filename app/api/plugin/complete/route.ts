@@ -1,2 +1,16 @@
-import {bearer,db,digest,json} from "../../../../lib/bridge";
-export async function POST(request:Request){const auth=bearer(request);const body=await request.json() as {jobId?:string;status?:string};const database=await db();const session=await database.prepare("SELECT id FROM bridge_sessions WHERE plugin_token_hash=?").bind(await digest(auth)).first<{id:string}>();if(!session)return json({error:"Unauthorized"},401);await database.prepare("UPDATE build_jobs SET status=? WHERE id=? AND session_id=?").bind(body.status==="applied"?"applied":"rejected",body.jobId,session.id).run();return json({ok:true});}
+import { bearer, db, digest, json } from "../../../../lib/bridge";
+export async function POST(request: Request) {
+  const auth = bearer(request);
+  const body = (await request.json()) as { jobId?: string; status?: string };
+  const database = await db();
+  const session = await database
+    .prepare("SELECT id FROM bridge_sessions WHERE plugin_token_hash=?")
+    .bind(await digest(auth))
+    .first<{ id: string }>();
+  if (!session) return json({ error: "Unauthorized" }, 401);
+  await database
+    .prepare("UPDATE build_jobs SET status=? WHERE id=? AND session_id=?")
+    .bind(body.status === "applied" ? "applied" : "rejected", body.jobId, session.id)
+    .run();
+  return json({ ok: true });
+}
