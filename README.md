@@ -7,13 +7,13 @@ The deployed GitHub Pages website is the standalone marketing page in `landing/i
 ## Safety and cost controls
 
 - Gemini credentials stay in the server environment and never reach GitHub client code, Roblox, or players.
-- The default model is `gemini-3.1-flash-lite` with a 2,048-token output ceiling.
+- The default model is `gemini-3.6-flash`, falling back to `gemini-3.1-flash-lite` on failure, with a 16,384-token output ceiling.
 - Pairing sessions expire after one hour and permit at most 40 generation requests.
 - The plugin accepts only allowlisted instance classes and blocks dangerous Luau patterns.
 - Generated builds require an explicit Apply click and create Studio undo waypoints.
-- One Bloxy Bit represents one cent of metered AI usage. Pro renewals grant 2,200 Bits.
+- One Bloxy Bit represents one cent of metered AI usage. A planned Pro renewal will grant 2,200 Bits; this is not yet purchasable.
 - Every charge is enforced by the backend and recorded in an append-only ledger. Failed AI requests are refunded automatically.
-- Current prices: blueprint 1 Bit, thumbnail 4 Bits, basic 3D 10 Bits, textured 3D 30 Bits, and premium 3D 50 Bits.
+- Live prices (`lib/bits.ts`, `ACTION_COSTS`): blueprint 1 Bit, 3D asset generation (text, image, or doodle) 6 Bits flat. `thumbnail` (4 Bits), `3d_basic` (4 Bits), and `3d_premium` (10 Bits) are defined in the cost table but not yet wired to a route — every `/api/3d/generate` call currently charges the `3d_textured` rate regardless of quality.
 
 ## Setup
 
@@ -24,6 +24,16 @@ The deployed GitHub Pages website is the standalone marketing page in `landing/i
 5. Open the website, enter its pairing code in the plugin, and review builds before applying them.
 
 The plugin is a Studio development tool. Do not place it inside a published Roblox experience.
+
+## Accounts
+
+Email/password sign-in works out of the box — no configuration needed. OAuth sign-in (Roblox, Discord, Google) requires registering an app with each provider and setting its client ID/secret as Worker secrets (see `.env.example`). For each provider, the redirect URI to register is:
+
+```
+https://<your-worker-domain>/api/auth/oauth/<provider>/callback
+```
+
+where `<provider>` is `roblox`, `discord`, or `google`. A provider button on the sign-in modal is inert (its `/start` route redirects back with an error) until that provider's secrets are set — the other sign-in methods keep working independently. Signed-in Bits balances renew monthly via a Cloudflare Cron Trigger (`worker/index.ts`'s `scheduled` handler, declared in `vite.config.ts`); the trigger runs daily and tops up any account whose `renews_at` has passed, so no one waits more than a day past their actual renewal date.
 
 ## Private thumbnail reference library
 

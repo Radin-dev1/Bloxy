@@ -3,8 +3,7 @@ import vinext from "vinext";
 import { defineConfig } from "vite";
 import hostingConfig from "./.openai/hosting.json";
 
-const SITE_CREATOR_DATABASE_ID =
-  "4525fb4c-5628-4387-bd6c-6c30581e97ee";
+const SITE_CREATOR_DATABASE_ID = "4525fb4c-5628-4387-bd6c-6c30581e97ee";
 
 const { d1, r2 } = hostingConfig;
 
@@ -14,6 +13,10 @@ const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
 const localBindingConfig = {
   main: "./worker/index.ts",
   compatibility_flags: ["nodejs_compat"],
+  // Checks daily for wallets whose renews_at has passed; the renewal itself is monthly
+  // (see renewDueUserWallets in lib/bits.ts), the cron just needs to poll often enough
+  // that no one waits much past their actual renewal date.
+  triggers: { crons: ["0 12 * * *"] },
   d1_databases: d1
     ? [
         {
