@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f7fa" />
+    <meta
+      name="description"
+      content="Browse public Bloxy worlds built by the community, open any of them in the workspace, and remix them into your own."
+    />
+    <title>Bloxy — Explore worlds</title>
+    <link rel="icon" href="../bloxy-logo.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=Roboto+Mono:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <style>
+      .explore-hero {
+        padding: 56px 0 30px;
+      }
+      .explore-hero h1 {
+        margin: 0 0 10px;
+        font-family: var(--display);
+        font-size: clamp(30px, 4.4vw, 46px);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      .explore-hero > p {
+        margin: 0 0 26px;
+        max-width: 560px;
+        color: var(--slate);
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .explore-prompt {
+        display: flex;
+        gap: 10px;
+        max-width: 640px;
+        padding: 8px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--surface);
+        box-shadow: 0 14px 40px #18263a0d;
+      }
+      .explore-prompt input {
+        flex: 1;
+        min-width: 0;
+        padding: 10px 12px;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        outline: none;
+        font-size: 15px;
+      }
+      .explore-prompt button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border: 0;
+        border-radius: 11px;
+        background: var(--coral);
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .explore-prompt button:hover {
+        filter: brightness(1.05);
+      }
+      .explore-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 34px 0 18px;
+      }
+      .explore-toolbar h2 {
+        margin: 0 auto 0 0;
+        font-family: var(--display);
+        font-size: 19px;
+        font-weight: 800;
+      }
+      .explore-tab {
+        padding: 8px 16px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--surface);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--slate);
+        cursor: pointer;
+      }
+      .explore-tab.active {
+        border-color: var(--ink);
+        background: var(--ink);
+        color: white;
+      }
+      .world-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 18px;
+        padding-bottom: 26px;
+      }
+      .world-tile {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--surface);
+        transition:
+          transform 0.25s var(--ease),
+          box-shadow 0.25s var(--ease);
+      }
+      .world-tile:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 18px 44px #18263a14;
+      }
+      .world-tile .tile-thumb {
+        position: relative;
+        aspect-ratio: 16/9;
+        background: linear-gradient(135deg, #b9ddf0, #a7cd62);
+      }
+      .world-tile .tile-thumb img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .world-tile .tile-thumb i:not([data-lucide]) {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        color: #ffffffd0;
+      }
+      .world-tile .tile-body {
+        display: grid;
+        gap: 3px;
+        padding: 13px 14px 14px;
+      }
+      .world-tile .tile-body b {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-family: var(--display);
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .world-tile .tile-body span {
+        font-size: 12.5px;
+        color: var(--slate);
+      }
+      .world-tile .tile-meta {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 7px;
+        font-size: 12px;
+        color: var(--slate);
+      }
+      .world-tile .tile-meta svg {
+        width: 14px;
+        height: 14px;
+      }
+      .explore-state {
+        padding: 70px 20px;
+        border: 1px dashed var(--line);
+        border-radius: 18px;
+        text-align: center;
+        color: var(--slate);
+      }
+      .explore-state h3 {
+        margin: 0 0 8px;
+        font-family: var(--display);
+        color: var(--ink);
+      }
+      .explore-state p {
+        margin: 0 0 18px;
+        font-size: 14.5px;
+        line-height: 1.6;
+      }
+      .explore-more {
+        display: block;
+        margin: 0 auto 60px;
+        padding: 11px 26px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--surface);
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .explore-more[hidden] {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header" id="top">
+      <nav class="shell nav" aria-label="Main navigation">
+        <a class="brand" href="../" aria-label="Bloxy home">
+          <span class="brand-mark" aria-hidden="true"
+            ><img src="../bloxy-logo.svg" alt="" width="34" height="34"
+          /></span>
+          <span>Bloxy</span>
+        </a>
+        <div class="nav-links">
+          <a href="../#product">Product</a>
+          <a href="./" aria-current="page">Explore</a>
+          <a href="../#pricing">Pricing</a>
+        </div>
+        <div class="nav-actions">
+          <a class="text-link" href="../workspace/">Open workspace</a>
+          <a class="button button-coral button-small" href="../workspace/?auth=1"
+            >Sign up / log in</a
+          >
+        </div>
+      </nav>
+    </header>
+
+    <main id="main" class="shell">
+      <section class="explore-hero">
+        <h1>Explore worlds</h1>
+        <p>
+          Every world here was described in plain words and built by Bloxy. Open one in the
+          workspace, walk around it, and remix it into something of your own.
+        </p>
+        <form class="explore-prompt" id="promptForm">
+          <input
+            id="promptInput"
+            placeholder="What do you want to build today?"
+            aria-label="Describe a world to build"
+            maxlength="500"
+          />
+          <button type="submit">Make it <i data-lucide="arrow-right"></i></button>
+        </form>
+      </section>
+
+      <div class="explore-toolbar">
+        <h2>Community worlds</h2>
+        <button class="explore-tab active" data-sort="new">Newest</button>
+        <button class="explore-tab" data-sort="top">Most played</button>
+      </div>
+
+      <div class="world-grid" id="worldGrid"></div>
+      <button class="explore-more" id="loadMore" hidden>Load more worlds</button>
+    </main>
+
+    <footer class="footer shell">
+      <a class="brand" href="../"
+        ><span class="brand-mark" aria-hidden="true"
+          ><img src="../bloxy-logo.svg" alt="" width="34" height="34" /></span
+        ><span>Bloxy</span></a
+      >
+      <p>Independent AI building tools for Roblox creators.</p>
+      <div>
+        <a href="https://github.com/Radin-dev1/Bloxy" target="_blank" rel="noopener">Source</a>
+        <a href="../#pricing">Pricing</a>
+        <a href="../#questions">Questions</a>
+      </div>
+    </footer>
+
+    <script>
+      const API = "https://bloxy.radin-yt1324.workers.dev";
+      const grid = document.getElementById("worldGrid");
+      const loadMore = document.getElementById("loadMore");
+      let sort = "new",
+        offset = 0,
+        loading = false;
+      const esc = (value) =>
+        String(value).replace(
+          /[&<>"']/g,
+          (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch],
+        );
+      function stateCard(title, body, cta) {
+        grid.innerHTML =
+          '<div class="explore-state" style="grid-column:1/-1"><h3>' +
+          esc(title) +
+          "</h3><p>" +
+          esc(body) +
+          "</p>" +
+          (cta
+            ? '<a class="button button-coral button-small" href="../workspace/">' +
+              esc(cta) +
+              "</a>"
+            : "") +
+          "</div>";
+      }
+      function tile(world) {
+        const link = document.createElement("a");
+        link.className = "world-tile";
+        link.href = "../workspace/?world=" + encodeURIComponent(world.id);
+        link.innerHTML =
+          '<span class="tile-thumb">' +
+          (world.thumbnail
+            ? '<img src="' + world.thumbnail + '" alt="" loading="lazy">'
+            : "<i></i>") +
+          '</span><span class="tile-body"><b>' +
+          esc(world.title) +
+          "</b><span>by " +
+          esc(world.creatorName || "a Bloxy creator") +
+          '</span><span class="tile-meta"><i data-lucide="play"></i>' +
+          world.playCount +
+          (world.playCount === 1 ? " play" : " plays") +
+          "</span></span>";
+        return link;
+      }
+      async function fetchWorlds(reset) {
+        if (loading) return;
+        loading = true;
+        if (reset) {
+          offset = 0;
+          grid.innerHTML = "";
+          loadMore.hidden = true;
+        }
+        try {
+          const r = await fetch(
+            API + "/api/worlds/explore?sort=" + sort + "&offset=" + offset + "&limit=24",
+          );
+          if (!r.ok) throw new Error();
+          const d = await r.json();
+          if (!d.worlds.length && !offset) {
+            stateCard(
+              "No public worlds yet",
+              "Be the first: describe a world in the workspace, save it, and publish it to Explore.",
+              "Build the first world",
+            );
+          } else {
+            d.worlds.forEach((world) => grid.append(tile(world)));
+            lucide.createIcons();
+          }
+          offset += d.worlds.length;
+          loadMore.hidden = !d.hasMore;
+        } catch {
+          if (!offset)
+            stateCard(
+              "Explore is warming up",
+              "The world feed is not reachable right now. You can still build your own world in the workspace.",
+              "Open the workspace",
+            );
+        } finally {
+          loading = false;
+        }
+      }
+      document.querySelectorAll(".explore-tab").forEach((tab) => {
+        tab.onclick = () => {
+          document
+            .querySelectorAll(".explore-tab")
+            .forEach((item) => item.classList.toggle("active", item === tab));
+          sort = tab.dataset.sort;
+          fetchWorlds(true);
+        };
+      });
+      loadMore.onclick = () => fetchWorlds(false);
+      document.getElementById("promptForm").onsubmit = (event) => {
+        event.preventDefault();
+        const value = document.getElementById("promptInput").value.trim();
+        location.href = "../workspace/" + (value ? "?prompt=" + encodeURIComponent(value) : "");
+      };
+      lucide.createIcons();
+      const header = document.querySelector(".site-header");
+      const updateHeader = () => header.classList.toggle("scrolled", scrollY > 10);
+      updateHeader();
+      addEventListener("scroll", updateHeader, { passive: true });
+      fetchWorlds(true);
+    </script>
+  </body>
+</html>

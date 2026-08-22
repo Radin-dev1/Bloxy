@@ -1,284 +1,475 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f5f7fa">
-  <meta name="description" content="Build Roblox worlds, generate textured 3D assets, and deliver approved creations to Studio from one browser workspace.">
-  <meta property="og:title" content="Bloxy — Your Roblox game starts here">
-  <meta property="og:description" content="A real 3D workspace for building Roblox worlds with Gemini, Tripo, and your own direction.">
-  <title>Bloxy — Your Roblox game starts here</title>
-  <link rel="icon" href="bloxy-logo.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=Roboto+Mono:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
-</head>
-<body>
-  <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header" id="top">
-    <nav class="shell nav" aria-label="Main navigation">
-      <a class="brand" href="#top" aria-label="Bloxy home">
-        <span class="brand-mark" aria-hidden="true"><img src="bloxy-logo.svg" alt="" width="34" height="34"></span>
-        <span>Bloxy</span>
-      </a>
-      <div class="nav-links">
-        <a href="#product">Product</a>
-        <a href="#workflow">How it works</a>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f7fa" />
+    <meta
+      name="description"
+      content="Build Roblox worlds, generate textured 3D assets, and deliver approved creations to Studio from one browser workspace."
+    />
+    <meta property="og:title" content="Bloxy — Your Roblox game starts here" />
+    <meta
+      property="og:description"
+      content="A real 3D workspace for building Roblox worlds with Gemini, Tripo, and your own direction."
+    />
+    <title>Bloxy — Your Roblox game starts here</title>
+    <link rel="icon" href="bloxy-logo.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=Roboto+Mono:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header" id="top">
+      <nav class="shell nav" aria-label="Main navigation">
+        <a class="brand" href="#top" aria-label="Bloxy home">
+          <span class="brand-mark" aria-hidden="true"
+            ><img src="bloxy-logo.svg" alt="" width="34" height="34"
+          /></span>
+          <span>Bloxy</span>
+        </a>
+        <div class="nav-links">
+          <a href="#product">Product</a>
+          <a href="#workflow">How it works</a>
+          <a href="explore/">Explore</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#questions">Questions</a>
+        </div>
+        <div class="nav-actions">
+          <a
+            class="text-link nav-github"
+            href="https://github.com/Radin-dev1/Bloxy"
+            target="_blank"
+            rel="noopener"
+            aria-label="Bloxy on GitHub"
+            ><i data-lucide="github"></i
+          ></a>
+          <a class="text-link" href="workspace/">Open workspace</a>
+          <a class="button button-coral button-small" href="workspace/?auth=1">Sign up / log in</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero shell" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <span class="release"><i></i> Open beta · build in your browser</span>
+          <h1 id="hero-title" class="hero-title-stacked">
+            <span class="line">You describe it.</span>
+            <span class="line">Bloxy <em>builds</em> it.</span>
+          </h1>
+          <p>
+            Describe a world, shape it in a real 3D canvas, generate textured assets, and send only
+            the build you approve to Roblox Studio.
+          </p>
+          <form class="hero-prompt" id="heroPrompt" aria-label="Describe a world to build">
+            <input
+              id="heroPromptInput"
+              placeholder="What do you want to build today?"
+              maxlength="500"
+              aria-label="World description"
+            />
+            <button type="submit">Make it <i data-lucide="arrow-right"></i></button>
+          </form>
+          <div class="hero-actions">
+            <a class="inline-action" href="explore/"
+              >Explore community worlds <i data-lucide="compass"></i
+            ></a>
+            <a class="inline-action" href="#workflow"
+              >See how generation works <i data-lucide="chevron-down"></i
+            ></a>
+          </div>
+          <ul class="hero-proof" aria-label="Product highlights">
+            <li>
+              <i data-lucide="mouse-pointer-2"></i
+              ><span><b>Direct editing</b> in the viewport</span>
+            </li>
+            <li>
+              <i data-lucide="scan-line"></i><span><b>Text and doodle</b> to textured 3D</span>
+            </li>
+            <li>
+              <i data-lucide="shield-check"></i
+              ><span><b>You approve</b> every Studio delivery</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="world-stage" aria-label="Live Bloxy workspace preview">
+          <div class="world-glow"></div>
+          <div class="world-window">
+            <div class="window-bar">
+              <span class="window-brand"
+                ><span class="brand-mark brand-mark-mini" aria-hidden="true"
+                  ><img src="bloxy-logo.svg" alt="" width="23" height="23"
+                /></span>
+                Untitled Experience</span
+              >
+              <span class="window-state"><i></i> LIVE CANVAS</span>
+              <div class="window-actions">
+                <button
+                  id="refreshPreview"
+                  type="button"
+                  aria-label="Restart workspace preview"
+                  title="Restart preview"
+                >
+                  <i data-lucide="rotate-ccw"></i>
+                </button>
+                <a href="workspace/" aria-label="Open full workspace" title="Open full workspace"
+                  ><i data-lucide="maximize-2"></i
+                ></a>
+              </div>
+            </div>
+            <iframe
+              id="workspacePreview"
+              src="workspace/?embed=1&amp;ground=infinite"
+              title="Interactive Bloxy 3D workspace"
+              loading="eager"
+            ></iframe>
+          </div>
+          <div class="world-caption">
+            <span><i data-lucide="move-3d"></i> Drag to orbit</span>
+            <strong>Real WebGL workspace. Not a screenshot.</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="truth-strip" aria-label="Bloxy capabilities">
+        <div class="shell truth-grid">
+          <span>One workspace</span>
+          <b>Worlds</b><i></i><b>3D assets</b><i></i><b>Luau</b><i></i><b>UI</b><i></i
+          ><b>Studio delivery</b>
+        </div>
+      </section>
+
+      <section class="product shell" id="product" aria-labelledby="product-title">
+        <div class="section-heading">
+          <span class="section-index">01 / THE PRODUCT</span>
+          <h2 id="product-title">
+            A builder that gives you something to shape—not another answer to copy.
+          </h2>
+          <p>
+            Bloxy keeps generation and editing in the same place, so the next move is always
+            visible.
+          </p>
+        </div>
+
+        <div class="product-grid">
+          <article class="product-card product-card-wide">
+            <div class="card-copy">
+              <span class="card-icon"><i data-lucide="land-plot"></i></span>
+              <h3>Build the whole scene</h3>
+              <p>
+                Gemini plans recognizable structures, paths, scale, materials, and systems. The
+                result appears in the canvas so you can select and change it.
+              </p>
+              <a href="workspace/">Try scene generation <i data-lucide="arrow-up-right"></i></a>
+            </div>
+            <img
+              src="images/bloxy-game-lobby.webp"
+              alt="A bright Roblox-style lobby with portals and paths"
+              loading="lazy"
+            />
+          </article>
+
+          <article class="product-card product-card-tall">
+            <img
+              src="images/bloxy-3d-assets.webp"
+              alt="A set of Roblox-style 3D game assets"
+              loading="lazy"
+            />
+            <div class="card-copy">
+              <span class="card-icon"><i data-lucide="scan-line"></i></span>
+              <h3>Turn an idea into a real asset</h3>
+              <p>
+                Use text, an image, or your own doodle. Tripo returns a textured GLB that loads
+                directly into your world.
+              </p>
+              <a href="workspace/">Generate an asset <i data-lucide="arrow-up-right"></i></a>
+            </div>
+          </article>
+
+          <article class="product-card product-card-detail">
+            <div class="property-demo" aria-hidden="true">
+              <div class="property-head"><span>SELECTED</span><b>PortalFrame</b></div>
+              <label><span>Material</span><output>Neon</output></label>
+              <label
+                ><span>Color</span><output><i></i>#27C7FF</output></label
+              >
+              <label><span>Size</span><output>18 &nbsp; 24 &nbsp; 4</output></label>
+              <label class="toggle-line"><span>Anchored</span><output>ON</output></label>
+              <label class="toggle-line"><span>CanCollide</span><output>ON</output></label>
+            </div>
+            <div class="card-copy">
+              <span class="card-icon"><i data-lucide="sliders-horizontal"></i></span>
+              <h3>Keep control after AI</h3>
+              <p>
+                Select objects, edit real properties, transform them, undo changes, and preview the
+                scene cleanly.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="toolkit shell" id="toolkit" aria-labelledby="toolkit-title">
+        <div class="section-heading">
+          <span class="section-index">02 / THE TOOLKIT</span>
+          <h2 id="toolkit-title">One workspace, the whole pipeline.</h2>
+          <p>
+            Every one of these runs today, in the same canvas — nothing here is a mockup of a future
+            feature.
+          </p>
+        </div>
+        <div class="toolkit-grid">
+          <article class="toolkit-card">
+            <span class="card-icon"><i data-lucide="sparkles"></i></span>
+            <h3>Scene Builder</h3>
+            <p>
+              Describe a lobby, arena, or system. Gemini plans real Roblox parts, sizes, and
+              materials in context.
+            </p>
+          </article>
+          <article class="toolkit-card">
+            <span class="card-icon"><i data-lucide="scan-line"></i></span>
+            <h3>3D Asset Generator</h3>
+            <p>
+              Type, upload an image, or doodle. Tripo returns a textured GLB ready to drop into the
+              scene.
+            </p>
+          </article>
+          <article class="toolkit-card">
+            <span class="card-icon"><i data-lucide="search"></i></span>
+            <h3>Creator Store Search</h3>
+            <p>Pull in verified Roblox Creator Store models without leaving the workspace.</p>
+          </article>
+          <article class="toolkit-card">
+            <span class="card-icon"><i data-lucide="sliders-horizontal"></i></span>
+            <h3>Property Inspector</h3>
+            <p>
+              Select anything and edit material, color, size, anchoring, and collision directly.
+            </p>
+          </article>
+          <article class="toolkit-card">
+            <span class="card-icon"><i data-lucide="plug-zap"></i></span>
+            <h3>Studio Delivery</h3>
+            <p>
+              Pair the plugin once. Only the build you approve gets pushed, with a Studio undo
+              waypoint.
+            </p>
+          </article>
+          <article class="toolkit-card">
+            <span class="card-icon"><i data-lucide="shield-check"></i></span>
+            <h3>Safety Rails</h3>
+            <p>
+              Allowlisted instance classes and blocked dangerous Luau patterns keep generated builds
+              contained.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="workflow" id="workflow" aria-labelledby="workflow-title">
+        <div class="shell workflow-shell">
+          <div class="section-heading section-heading-light">
+            <span class="section-index">03 / FROM PROMPT TO STUDIO</span>
+            <h2 id="workflow-title">Generation is the start of the work—not the end.</h2>
+          </div>
+          <ol class="workflow-steps">
+            <li>
+              <span>01</span><i data-lucide="message-square-text"></i>
+              <h3>Direct it</h3>
+              <p>Describe the game, system, or single asset you want.</p>
+            </li>
+            <li>
+              <span>02</span><i data-lucide="sparkles"></i>
+              <h3>Generate it</h3>
+              <p>Bloxy chooses the scene or 3D pipeline and builds in context.</p>
+            </li>
+            <li>
+              <span>03</span><i data-lucide="move-3d"></i>
+              <h3>Shape it</h3>
+              <p>Orbit, select, move, resize, recolor, and inspect the result.</p>
+            </li>
+            <li>
+              <span>04</span><i data-lucide="plug-zap"></i>
+              <h3>Approve it</h3>
+              <p>Pair the plugin and deliver the reviewed build to Studio.</p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="showcase shell">
+        <div class="showcase-image">
+          <img
+            src="images/bloxy-ai-world-builder.webp"
+            alt="A Roblox-style fortress world being built from blueprints"
+            loading="lazy"
+          />
+          <span>WORLD DIRECTION</span>
+        </div>
+        <div class="showcase-copy">
+          <span class="section-index">04 / BUILT FOR ITERATION</span>
+          <h2>Ask for the world. Then keep pushing it.</h2>
+          <p>
+            Good Roblox games are made through passes. Bloxy keeps the scene, the prompt, the asset
+            tools, and the delivery step connected so you can keep refining instead of restarting.
+          </p>
+          <div class="showcase-list">
+            <span><i data-lucide="check"></i> Infinite-looking Roblox baseplate</span>
+            <span><i data-lucide="check"></i> Gemini scene planning and review</span>
+            <span><i data-lucide="check"></i> Tripo textured 3D generation</span>
+            <span><i data-lucide="check"></i> Verified Creator Store search</span>
+          </div>
+          <a class="button button-dark" href="workspace/"
+            >Build in the workspace <i data-lucide="arrow-right"></i
+          ></a>
+        </div>
+      </section>
+
+      <section class="pricing shell" id="pricing" aria-labelledby="pricing-title">
+        <div class="section-heading">
+          <span class="section-index">05 / PRICING</span>
+          <h2 id="pricing-title">Priced by the generation, not the seat.</h2>
+          <p>
+            One Bloxy Bit is one cent of metered AI usage. Every charge is enforced server-side and
+            written to an append-only ledger — a failed generation is refunded automatically.
+          </p>
+        </div>
+        <div class="pricing-grid">
+          <article class="pricing-card">
+            <span class="pricing-tier">START FREE</span>
+            <b class="pricing-amount">25 Bits</b>
+            <p>
+              No signup. Pair a pricing-free session and try scene and 3D generation right in the
+              browser.
+            </p>
+            <a class="button button-dark button-small" href="workspace/"
+              >Open workspace <i data-lucide="arrow-up-right"></i
+            ></a>
+          </article>
+          <article class="pricing-card pricing-card-dark">
+            <span class="pricing-tier">PRO · COMING SOON</span>
+            <b class="pricing-amount">2,200 Bits</b>
+            <p>
+              Planned renewal grant for creators building and shipping continuously. Not yet
+              purchasable.
+            </p>
+          </article>
+          <article class="pricing-card pricing-card-table">
+            <span class="pricing-tier">COST PER GENERATION</span>
+            <ul class="pricing-rows">
+              <li><span>Blueprint (scene plan)</span><b>1 Bit</b></li>
+              <li><span>3D asset (text, image, or doodle)</span><b>6 Bits</b></li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="questions shell" id="questions" aria-labelledby="questions-title">
+        <div class="section-heading question-heading">
+          <span class="section-index">06 / STRAIGHT ANSWERS</span>
+          <h2 id="questions-title">Before you build.</h2>
+        </div>
+        <div class="question-list">
+          <details>
+            <summary>Is the workspace actually interactive? <i data-lucide="plus"></i></summary>
+            <p>
+              Yes. It is a Three.js workspace with orbit controls, selection, transforms, a property
+              editor, working tool panels, undo and redo, and live generated geometry.
+            </p>
+          </details>
+          <details>
+            <summary>What do Gemini and Tripo each do? <i data-lucide="plus"></i></summary>
+            <p>
+              Gemini plans Roblox scenes and action blueprints. Tripo handles text-to-3D and
+              image-to-3D, returning textured GLB models for the viewport.
+            </p>
+          </details>
+          <details>
+            <summary>
+              Does Bloxy change my Studio project automatically? <i data-lucide="plus"></i>
+            </summary>
+            <p>
+              No. Web generation and Studio delivery are separate. You pair the plugin and approve
+              the build before delivery.
+            </p>
+          </details>
+          <details>
+            <summary>Where are the API keys stored? <i data-lucide="plus"></i></summary>
+            <p>
+              Provider keys belong in encrypted Cloudflare secrets. They are not placed in the
+              GitHub Pages frontend or sent to Roblox Studio.
+            </p>
+          </details>
+          <details>
+            <summary>Is Bloxy affiliated with Roblox? <i data-lucide="plus"></i></summary>
+            <p>
+              No. Bloxy is an independent creator tool and is not endorsed by Roblox Corporation.
+            </p>
+          </details>
+          <details>
+            <summary>What happens if a generation fails? <i data-lucide="plus"></i></summary>
+            <p>
+              You are not charged. Failed AI requests are refunded automatically, and every charge
+              is recorded in an append-only ledger you can audit.
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <section class="closing shell">
+        <div>
+          <span class="release release-dark"><i></i> YOUR BASEPLATE IS READY</span>
+          <h2>Stop describing the game in tabs. Start moving through it.</h2>
+        </div>
+        <a class="button button-coral" href="workspace/"
+          >Open Bloxy <i data-lucide="arrow-up-right"></i
+        ></a>
+      </section>
+    </main>
+
+    <footer class="footer shell">
+      <a class="brand" href="#top"
+        ><span class="brand-mark" aria-hidden="true"
+          ><img src="bloxy-logo.svg" alt="" width="34" height="34" /></span
+        ><span>Bloxy</span></a
+      >
+      <p>Independent AI building tools for Roblox creators.</p>
+      <div>
+        <a href="https://github.com/Radin-dev1/Bloxy" target="_blank" rel="noopener">Source</a>
+        <a href="https://github.com/Radin-dev1/Bloxy/issues" target="_blank" rel="noopener"
+          >Feedback</a
+        >
+        <a href="explore/">Explore</a>
         <a href="#pricing">Pricing</a>
         <a href="#questions">Questions</a>
       </div>
-      <div class="nav-actions">
-        <a class="text-link nav-github" href="https://github.com/Radin-dev1/Bloxy" target="_blank" rel="noopener" aria-label="Bloxy on GitHub"><i data-lucide="github"></i></a>
-        <a class="text-link" href="workspace/">Open workspace</a>
-        <a class="button button-coral button-small" href="workspace/?auth=1">Sign up / log in</a>
-      </div>
-    </nav>
-  </header>
+    </footer>
 
-  <main id="main">
-    <section class="hero shell" aria-labelledby="hero-title">
-      <div class="hero-copy">
-        <span class="release"><i></i> Open beta · build in your browser</span>
-        <h1 id="hero-title" class="hero-title-stacked">
-          <span class="line">You describe it.</span>
-          <span class="line">Bloxy <em>builds</em> it.</span>
-        </h1>
-        <p>Describe a world, shape it in a real 3D canvas, generate textured assets, and send only the build you approve to Roblox Studio.</p>
-        <div class="hero-actions">
-          <a class="button button-coral" href="workspace/">Start with a baseplate <i data-lucide="arrow-right"></i></a>
-          <a class="inline-action" href="#workflow">See how generation works <i data-lucide="chevron-down"></i></a>
-        </div>
-        <ul class="hero-proof" aria-label="Product highlights">
-          <li><i data-lucide="mouse-pointer-2"></i><span><b>Direct editing</b> in the viewport</span></li>
-          <li><i data-lucide="scan-line"></i><span><b>Text and doodle</b> to textured 3D</span></li>
-          <li><i data-lucide="shield-check"></i><span><b>You approve</b> every Studio delivery</span></li>
-        </ul>
-      </div>
-
-      <div class="world-stage" aria-label="Live Bloxy workspace preview">
-        <div class="world-glow"></div>
-        <div class="world-window">
-          <div class="window-bar">
-            <span class="window-brand"><span class="brand-mark brand-mark-mini" aria-hidden="true"><img src="bloxy-logo.svg" alt="" width="23" height="23"></span> Untitled Experience</span>
-            <span class="window-state"><i></i> LIVE CANVAS</span>
-            <div class="window-actions">
-              <button id="refreshPreview" type="button" aria-label="Restart workspace preview" title="Restart preview"><i data-lucide="rotate-ccw"></i></button>
-              <a href="workspace/" aria-label="Open full workspace" title="Open full workspace"><i data-lucide="maximize-2"></i></a>
-            </div>
-          </div>
-          <iframe id="workspacePreview" src="workspace/?embed=1&amp;ground=infinite" title="Interactive Bloxy 3D workspace" loading="eager"></iframe>
-        </div>
-        <div class="world-caption">
-          <span><i data-lucide="move-3d"></i> Drag to orbit</span>
-          <strong>Real WebGL workspace. Not a screenshot.</strong>
-        </div>
-      </div>
-    </section>
-
-    <section class="truth-strip" aria-label="Bloxy capabilities">
-      <div class="shell truth-grid">
-        <span>One workspace</span>
-        <b>Worlds</b><i></i><b>3D assets</b><i></i><b>Luau</b><i></i><b>UI</b><i></i><b>Studio delivery</b>
-      </div>
-    </section>
-
-    <section class="product shell" id="product" aria-labelledby="product-title">
-      <div class="section-heading">
-        <span class="section-index">01 / THE PRODUCT</span>
-        <h2 id="product-title">A builder that gives you something to shape—not another answer to copy.</h2>
-        <p>Bloxy keeps generation and editing in the same place, so the next move is always visible.</p>
-      </div>
-
-      <div class="product-grid">
-        <article class="product-card product-card-wide">
-          <div class="card-copy">
-            <span class="card-icon"><i data-lucide="land-plot"></i></span>
-            <h3>Build the whole scene</h3>
-            <p>Gemini plans recognizable structures, paths, scale, materials, and systems. The result appears in the canvas so you can select and change it.</p>
-            <a href="workspace/">Try scene generation <i data-lucide="arrow-up-right"></i></a>
-          </div>
-          <img src="images/bloxy-game-lobby.webp" alt="A bright Roblox-style lobby with portals and paths" loading="lazy">
-        </article>
-
-        <article class="product-card product-card-tall">
-          <img src="images/bloxy-3d-assets.webp" alt="A set of Roblox-style 3D game assets" loading="lazy">
-          <div class="card-copy">
-            <span class="card-icon"><i data-lucide="scan-line"></i></span>
-            <h3>Turn an idea into a real asset</h3>
-            <p>Use text, an image, or your own doodle. Tripo returns a textured GLB that loads directly into your world.</p>
-            <a href="workspace/">Generate an asset <i data-lucide="arrow-up-right"></i></a>
-          </div>
-        </article>
-
-        <article class="product-card product-card-detail">
-          <div class="property-demo" aria-hidden="true">
-            <div class="property-head"><span>SELECTED</span><b>PortalFrame</b></div>
-            <label><span>Material</span><output>Neon</output></label>
-            <label><span>Color</span><output><i></i>#27C7FF</output></label>
-            <label><span>Size</span><output>18 &nbsp; 24 &nbsp; 4</output></label>
-            <label class="toggle-line"><span>Anchored</span><output>ON</output></label>
-            <label class="toggle-line"><span>CanCollide</span><output>ON</output></label>
-          </div>
-          <div class="card-copy">
-            <span class="card-icon"><i data-lucide="sliders-horizontal"></i></span>
-            <h3>Keep control after AI</h3>
-            <p>Select objects, edit real properties, transform them, undo changes, and preview the scene cleanly.</p>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section class="toolkit shell" id="toolkit" aria-labelledby="toolkit-title">
-      <div class="section-heading">
-        <span class="section-index">02 / THE TOOLKIT</span>
-        <h2 id="toolkit-title">One workspace, the whole pipeline.</h2>
-        <p>Every one of these runs today, in the same canvas — nothing here is a mockup of a future feature.</p>
-      </div>
-      <div class="toolkit-grid">
-        <article class="toolkit-card">
-          <span class="card-icon"><i data-lucide="sparkles"></i></span>
-          <h3>Scene Builder</h3>
-          <p>Describe a lobby, arena, or system. Gemini plans real Roblox parts, sizes, and materials in context.</p>
-        </article>
-        <article class="toolkit-card">
-          <span class="card-icon"><i data-lucide="scan-line"></i></span>
-          <h3>3D Asset Generator</h3>
-          <p>Type, upload an image, or doodle. Tripo returns a textured GLB ready to drop into the scene.</p>
-        </article>
-        <article class="toolkit-card">
-          <span class="card-icon"><i data-lucide="search"></i></span>
-          <h3>Creator Store Search</h3>
-          <p>Pull in verified Roblox Creator Store models without leaving the workspace.</p>
-        </article>
-        <article class="toolkit-card">
-          <span class="card-icon"><i data-lucide="sliders-horizontal"></i></span>
-          <h3>Property Inspector</h3>
-          <p>Select anything and edit material, color, size, anchoring, and collision directly.</p>
-        </article>
-        <article class="toolkit-card">
-          <span class="card-icon"><i data-lucide="plug-zap"></i></span>
-          <h3>Studio Delivery</h3>
-          <p>Pair the plugin once. Only the build you approve gets pushed, with a Studio undo waypoint.</p>
-        </article>
-        <article class="toolkit-card">
-          <span class="card-icon"><i data-lucide="shield-check"></i></span>
-          <h3>Safety Rails</h3>
-          <p>Allowlisted instance classes and blocked dangerous Luau patterns keep generated builds contained.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="workflow" id="workflow" aria-labelledby="workflow-title">
-      <div class="shell workflow-shell">
-        <div class="section-heading section-heading-light">
-          <span class="section-index">03 / FROM PROMPT TO STUDIO</span>
-          <h2 id="workflow-title">Generation is the start of the work—not the end.</h2>
-        </div>
-        <ol class="workflow-steps">
-          <li><span>01</span><i data-lucide="message-square-text"></i><h3>Direct it</h3><p>Describe the game, system, or single asset you want.</p></li>
-          <li><span>02</span><i data-lucide="sparkles"></i><h3>Generate it</h3><p>Bloxy chooses the scene or 3D pipeline and builds in context.</p></li>
-          <li><span>03</span><i data-lucide="move-3d"></i><h3>Shape it</h3><p>Orbit, select, move, resize, recolor, and inspect the result.</p></li>
-          <li><span>04</span><i data-lucide="plug-zap"></i><h3>Approve it</h3><p>Pair the plugin and deliver the reviewed build to Studio.</p></li>
-        </ol>
-      </div>
-    </section>
-
-    <section class="showcase shell">
-      <div class="showcase-image">
-        <img src="images/bloxy-ai-world-builder.webp" alt="A Roblox-style fortress world being built from blueprints" loading="lazy">
-        <span>WORLD DIRECTION</span>
-      </div>
-      <div class="showcase-copy">
-        <span class="section-index">04 / BUILT FOR ITERATION</span>
-        <h2>Ask for the world. Then keep pushing it.</h2>
-        <p>Good Roblox games are made through passes. Bloxy keeps the scene, the prompt, the asset tools, and the delivery step connected so you can keep refining instead of restarting.</p>
-        <div class="showcase-list">
-          <span><i data-lucide="check"></i> Infinite-looking Roblox baseplate</span>
-          <span><i data-lucide="check"></i> Gemini scene planning and review</span>
-          <span><i data-lucide="check"></i> Tripo textured 3D generation</span>
-          <span><i data-lucide="check"></i> Verified Creator Store search</span>
-        </div>
-        <a class="button button-dark" href="workspace/">Build in the workspace <i data-lucide="arrow-right"></i></a>
-      </div>
-    </section>
-
-    <section class="pricing shell" id="pricing" aria-labelledby="pricing-title">
-      <div class="section-heading">
-        <span class="section-index">05 / PRICING</span>
-        <h2 id="pricing-title">Priced by the generation, not the seat.</h2>
-        <p>One Bloxy Bit is one cent of metered AI usage. Every charge is enforced server-side and written to an append-only ledger — a failed generation is refunded automatically.</p>
-      </div>
-      <div class="pricing-grid">
-        <article class="pricing-card">
-          <span class="pricing-tier">START FREE</span>
-          <b class="pricing-amount">25 Bits</b>
-          <p>No signup. Pair a pricing-free session and try scene and 3D generation right in the browser.</p>
-          <a class="button button-dark button-small" href="workspace/">Open workspace <i data-lucide="arrow-up-right"></i></a>
-        </article>
-        <article class="pricing-card pricing-card-dark">
-          <span class="pricing-tier">PRO · COMING SOON</span>
-          <b class="pricing-amount">2,200 Bits</b>
-          <p>Planned renewal grant for creators building and shipping continuously. Not yet purchasable.</p>
-        </article>
-        <article class="pricing-card pricing-card-table">
-          <span class="pricing-tier">COST PER GENERATION</span>
-          <ul class="pricing-rows">
-            <li><span>Blueprint (scene plan)</span><b>1 Bit</b></li>
-            <li><span>3D asset (text, image, or doodle)</span><b>6 Bits</b></li>
-          </ul>
-        </article>
-      </div>
-    </section>
-
-    <section class="questions shell" id="questions" aria-labelledby="questions-title">
-      <div class="section-heading question-heading">
-        <span class="section-index">06 / STRAIGHT ANSWERS</span>
-        <h2 id="questions-title">Before you build.</h2>
-      </div>
-      <div class="question-list">
-        <details><summary>Is the workspace actually interactive? <i data-lucide="plus"></i></summary><p>Yes. It is a Three.js workspace with orbit controls, selection, transforms, a property editor, working tool panels, undo and redo, and live generated geometry.</p></details>
-        <details><summary>What do Gemini and Tripo each do? <i data-lucide="plus"></i></summary><p>Gemini plans Roblox scenes and action blueprints. Tripo handles text-to-3D and image-to-3D, returning textured GLB models for the viewport.</p></details>
-        <details><summary>Does Bloxy change my Studio project automatically? <i data-lucide="plus"></i></summary><p>No. Web generation and Studio delivery are separate. You pair the plugin and approve the build before delivery.</p></details>
-        <details><summary>Where are the API keys stored? <i data-lucide="plus"></i></summary><p>Provider keys belong in encrypted Cloudflare secrets. They are not placed in the GitHub Pages frontend or sent to Roblox Studio.</p></details>
-        <details><summary>Is Bloxy affiliated with Roblox? <i data-lucide="plus"></i></summary><p>No. Bloxy is an independent creator tool and is not endorsed by Roblox Corporation.</p></details>
-        <details><summary>What happens if a generation fails? <i data-lucide="plus"></i></summary><p>You are not charged. Failed AI requests are refunded automatically, and every charge is recorded in an append-only ledger you can audit.</p></details>
-      </div>
-    </section>
-
-    <section class="closing shell">
-      <div>
-        <span class="release release-dark"><i></i> YOUR BASEPLATE IS READY</span>
-        <h2>Stop describing the game in tabs. Start moving through it.</h2>
-      </div>
-      <a class="button button-coral" href="workspace/">Open Bloxy <i data-lucide="arrow-up-right"></i></a>
-    </section>
-  </main>
-
-  <footer class="footer shell">
-    <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><img src="bloxy-logo.svg" alt="" width="34" height="34"></span><span>Bloxy</span></a>
-    <p>Independent AI building tools for Roblox creators.</p>
-    <div>
-      <a href="https://github.com/Radin-dev1/Bloxy" target="_blank" rel="noopener">Source</a>
-      <a href="https://github.com/Radin-dev1/Bloxy/issues" target="_blank" rel="noopener">Feedback</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#questions">Questions</a>
-    </div>
-  </footer>
-
-  <script>
-    lucide.createIcons();
-    const preview = document.getElementById('workspacePreview');
-    document.getElementById('refreshPreview').addEventListener('click', () => {
-      const url = new URL(preview.src, location.href);
-      url.searchParams.set('restart', Date.now());
-      preview.src = url;
-    });
-    const header = document.querySelector('.site-header');
-    const updateHeader = () => header.classList.toggle('scrolled', scrollY > 10);
-    updateHeader();
-    addEventListener('scroll', updateHeader, { passive: true });
-  </script>
-</body>
+    <script>
+      lucide.createIcons();
+      document.getElementById("heroPrompt").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const value = document.getElementById("heroPromptInput").value.trim();
+        location.href = "workspace/" + (value ? "?prompt=" + encodeURIComponent(value) : "");
+      });
+      const preview = document.getElementById("workspacePreview");
+      document.getElementById("refreshPreview").addEventListener("click", () => {
+        const url = new URL(preview.src, location.href);
+        url.searchParams.set("restart", Date.now());
+        preview.src = url;
+      });
+      const header = document.querySelector(".site-header");
+      const updateHeader = () => header.classList.toggle("scrolled", scrollY > 10);
+      updateHeader();
+      addEventListener("scroll", updateHeader, { passive: true });
+    </script>
+  </body>
 </html>

@@ -37,6 +37,10 @@ https://<your-worker-domain>/api/auth/oauth/<provider>/callback
 
 where `<provider>` is `roblox`, `discord`, or `google`. A provider button on the sign-in modal is inert (its `/start` route redirects back with an error) until that provider's secrets are set — the other sign-in methods keep working independently. Signed-in Bits balances renew monthly via a Cloudflare Cron Trigger (`worker/index.ts`'s `scheduled` handler, declared in `vite.config.ts`); the trigger runs daily and tops up any account whose `renews_at` has passed, so no one waits more than a day past their actual renewal date.
 
+## Worlds and Explore
+
+Signed-in creators can save the current build as a world (`worlds` table; blueprint JSON plus a small canvas-snapshot thumbnail stored inline in D1), reopen it later from the workspace's Worlds panel, and publish it. Published worlds appear on the public Explore page (`landing/explore/index.html`), which lists them newest-first or by play count. Opening someone else's world loads it read-into-canvas at `workspace/?world=<id>` and counts a play; saving it again creates the visitor's own remix copy. The landing page and Explore both carry a prompt box that deep-links into the workspace via `workspace/?prompt=<text>` and starts generation immediately.
+
 ## Private thumbnail reference library
 
 `reference-assets/` may contain locally supplied Roblox rig `.blend` files and face decal PNGs. It is intentionally excluded from Git because the supplied rig pack prohibits redistribution. The files are never uploaded automatically.

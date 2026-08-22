@@ -722,6 +722,8 @@
           <i data-lucide="audio-lines" class="icon"></i><span>Audio</span></button
         ><button data-mode="style">
           <i data-lucide="palette" class="icon"></i><span>Style</span></button
+        ><button data-mode="worlds">
+          <i data-lucide="globe-2" class="icon"></i><span>Worlds</span></button
         ><button data-mode="settings">
           <i data-lucide="settings" class="icon"></i><span>Settings</span>
         </button>
@@ -2256,6 +2258,7 @@
             else if (mode === "images") imagesPanel();
             else if (mode === "audio") audioPanel();
             else if (mode === "style") stylePanel();
+            else if (mode === "worlds") worldsPanel();
             else settingsPanel();
           }),
       );
@@ -2384,6 +2387,284 @@
         } else {
           await refreshAccount();
           if (wantsAuth && !currentUser) openAccountModal();
+        }
+      })();
+
+      let lastPrompt = "";
+      const generateOriginal = generate;
+      generate = function (p) {
+        lastPrompt = p;
+        return generateOriginal(p);
+      };
+      let currentWorld = null;
+      const escapeHTML = (value) =>
+        String(value).replace(
+          /[&<>"']/g,
+          (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch],
+        );
+      function authHeaders() {
+        const savedToken = localStorage.getItem(AUTH_TOKEN_KEY);
+        return savedToken ? { Authorization: "Bearer " + savedToken } : {};
+      }
+      function worldThumbnail() {
+        try {
+          renderer.render(scene, camera);
+          const source = renderer.domElement,
+            target = document.createElement("canvas");
+          target.width = 384;
+          target.height = 216;
+          const context = target.getContext("2d"),
+            scale = Math.max(target.width / source.width, target.height / source.height),
+            width = source.width * scale,
+            height = source.height * scale;
+          context.drawImage(
+            source,
+            (target.width - width) / 2,
+            (target.height - height) / 2,
+            width,
+            height,
+          );
+          return target.toDataURL("image/jpeg", 0.72);
+        } catch {
+          return null;
+        }
+      }
+      function loadWorldIntoCanvas(world) {
+        renderActions(world.actions || []);
+        if (world.title) ui(".project input").value = world.title;
+        currentWorld = { id: world.id, owned: !!world.isOwner };
+        if (world.prompt) lastPrompt = world.prompt;
+      }
+      function worldShareLink(id) {
+        return location.origin + location.pathname + "?world=" + id;
+      }
+      async function saveCurrentWorld() {
+        if (!currentUser) {
+          openAccountModal();
+          throw new Error("Sign in to save worlds");
+        }
+        if (!currentBlueprint.length)
+          throw new Error("Generate a build first, then save it as a world");
+        const titleInput = ui("#worldTitle"),
+          body = {
+            title:
+              (titleInput && titleInput.value.trim()) ||
+              ui(".project input").value.trim() ||
+              "Untitled world",
+            prompt: lastPrompt,
+            actions: currentBlueprint,
+            thumbnail: worldThumbnail(),
+          };
+        if (currentWorld && currentWorld.owned) body.worldId = currentWorld.id;
+        const r = await fetch(API + "/api/worlds/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...authHeaders() },
+          body: JSON.stringify(body),
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || "Could not save this world");
+        currentWorld = { id: d.world.id, owned: true };
+        ui(".project input").value = d.world.title;
+        return d.world;
+      }
+      function worldsPanel() {
+        const signedIn = !!currentUser;
+        toolPanel(
+          "My worlds",
+          signedIn
+            ? "Save this build, reopen it later, or publish it to Explore"
+            : "Sign in to save, publish, and share worlds",
+          signedIn
+            ? '<div class="tool-section"><label class="field"><span>World title</span><input id="worldTitle" maxlength="80"></label><button class="panel-button primary" id="saveWorldBtn"><i data-lucide="save"></i>Save world</button><button class="panel-button" id="openExplore"><i data-lucide="compass"></i>Browse Explore</button></div><div class="tool-list" id="worldList"><div class="panel-empty">Loading your worlds…</div></div>'
+            : '<div class="tool-section"><p class="panel-note">Worlds are saved to your Bloxy account. Sign in to keep this build, come back to it on any device, and publish it to the public Explore page.</p><button class="panel-button primary" id="worldsSignIn"><i data-lucide="user-circle"></i>Sign in</button><button class="panel-button" id="openExplore"><i data-lucide="compass"></i>Browse Explore</button></div>',
+          () => {
+            ui("#openExplore").onclick = () => (location.href = "../explore/");
+            if (!signedIn) {
+              ui("#worldsSignIn").onclick = () => openAccountModal();
+              return;
+            }
+            ui("#worldTitle").value = ui(".project input").value.trim() || "Untitled world";
+            async function refreshList() {
+              const list = ui("#worldList");
+              if (!list) return;
+              try {
+                const r = await fetch(API + "/api/worlds/mine", { headers: authHeaders() });
+                const d = await r.json();
+                if (!r.ok) throw new Error(d.error || "Could not load worlds");
+                list.innerHTML = d.worlds.length
+                  ? d.worlds
+                      .map(
+                        (world) =>
+                          '<article class="world-card">' +
+                          (world.thumbnail
+                            ? '<img src="' + world.thumbnail + '" alt="">'
+                            : '<span class="world-thumb"></span>') +
+                          "<div><b>" +
+                          escapeHTML(world.title) +
+                          "</b><small>" +
+                          (world.visibility === "public"
+                            ? "Public · " +
+                              world.playCount +
+                              (world.playCount === 1 ? " play" : " plays")
+                            : "Private") +
+                          '</small></div><div class="world-actions">' +
+                          '<button data-world-open="' +
+                          world.id +
+                          '" title="Open"><i data-lucide="folder-open"></i></button>' +
+                          '<button data-world-publish="' +
+                          world.id +
+                          '" data-visibility="' +
+                          world.visibility +
+                          '" title="' +
+                          (world.visibility === "public" ? "Make private" : "Publish to Explore") +
+                          '"><i data-lucide="' +
+                          (world.visibility === "public" ? "lock" : "globe-2") +
+                          '"></i></button>' +
+                          '<button data-world-share="' +
+                          world.id +
+                          '" title="Copy share link"><i data-lucide="link"></i></button>' +
+                          '<button data-world-delete="' +
+                          world.id +
+                          '" title="Delete"><i data-lucide="trash-2"></i></button>' +
+                          "</div></article>",
+                      )
+                      .join("")
+                  : '<div class="panel-empty">No saved worlds yet. Generate a build, then save it above.</div>';
+                lucide.createIcons();
+                list.querySelectorAll("[data-world-open]").forEach(
+                  (button) =>
+                    (button.onclick = async () => {
+                      try {
+                        const r = await fetch(API + "/api/worlds/" + button.dataset.worldOpen, {
+                          headers: authHeaders(),
+                        });
+                        const d = await r.json();
+                        if (!r.ok) throw new Error(d.error || "Could not open world");
+                        loadWorldIntoCanvas(d.world);
+                        ui("#worldTitle").value = d.world.title;
+                        toast('Opened "' + d.world.title + '"');
+                      } catch (error) {
+                        toast(error.message || "Could not open world");
+                      }
+                    }),
+                );
+                list.querySelectorAll("[data-world-publish]").forEach(
+                  (button) =>
+                    (button.onclick = async () => {
+                      const makePrivate = button.dataset.visibility === "public";
+                      try {
+                        const r = await fetch(
+                          API + "/api/worlds/" + button.dataset.worldPublish + "/publish",
+                          {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json", ...authHeaders() },
+                            body: JSON.stringify({
+                              visibility: makePrivate ? "private" : "public",
+                            }),
+                          },
+                        );
+                        const d = await r.json();
+                        if (!r.ok) throw new Error(d.error || "Could not update world");
+                        toast(
+                          makePrivate
+                            ? "World is private again"
+                            : "Published to Explore — share link copied",
+                        );
+                        if (!makePrivate)
+                          navigator.clipboard?.writeText(worldShareLink(d.world.id));
+                        refreshList();
+                      } catch (error) {
+                        toast(error.message || "Could not update world");
+                      }
+                    }),
+                );
+                list.querySelectorAll("[data-world-share]").forEach(
+                  (button) =>
+                    (button.onclick = () => {
+                      navigator.clipboard?.writeText(worldShareLink(button.dataset.worldShare));
+                      toast("Share link copied");
+                    }),
+                );
+                list.querySelectorAll("[data-world-delete]").forEach(
+                  (button) =>
+                    (button.onclick = async () => {
+                      try {
+                        const r = await fetch(API + "/api/worlds/" + button.dataset.worldDelete, {
+                          method: "DELETE",
+                          headers: authHeaders(),
+                        });
+                        const d = await r.json();
+                        if (!r.ok) throw new Error(d.error || "Could not delete world");
+                        if (currentWorld && currentWorld.id === button.dataset.worldDelete)
+                          currentWorld = null;
+                        toast("World deleted");
+                        refreshList();
+                      } catch (error) {
+                        toast(error.message || "Could not delete world");
+                      }
+                    }),
+                );
+              } catch (error) {
+                list.innerHTML =
+                  '<div class="panel-empty">' +
+                  escapeHTML(error.message || "Could not load worlds") +
+                  "</div>";
+              }
+            }
+            ui("#saveWorldBtn").onclick = async () => {
+              ui("#saveWorldBtn").disabled = true;
+              try {
+                const world = await saveCurrentWorld();
+                toast('Saved "' + world.title + '"');
+                refreshList();
+              } catch (error) {
+                toast(error.message || "Could not save this world");
+              } finally {
+                ui("#saveWorldBtn").disabled = false;
+              }
+            };
+            refreshList();
+          },
+        );
+      }
+      (async () => {
+        const params = new URLSearchParams(location.search),
+          sharedPrompt = params.get("prompt"),
+          worldId = params.get("world");
+        if (sharedPrompt) {
+          params.delete("prompt");
+          history.replaceState(
+            null,
+            "",
+            location.pathname + (params.toString() ? "?" + params.toString() : "") + location.hash,
+          );
+          $("#prompt").value = sharedPrompt;
+          $("#prompt").focus();
+          run(sharedPrompt);
+        }
+        if (worldId) {
+          try {
+            const r = await fetch(API + "/api/worlds/" + encodeURIComponent(worldId), {
+              headers: authHeaders(),
+            });
+            const d = await r.json();
+            if (!r.ok) throw new Error(d.error || "That world is unavailable");
+            loadWorldIntoCanvas(d.world);
+            toast(
+              'Loaded "' +
+                d.world.title +
+                '"' +
+                (d.world.creatorName ? " by " + d.world.creatorName : ""),
+            );
+            if (!d.world.isOwner)
+              message(
+                'You are exploring "' +
+                  d.world.title +
+                  '". Build on top of it, then save it from the Worlds panel to remix it into your own copy.',
+              );
+          } catch (error) {
+            toast(error.message || "That world is unavailable");
+          }
         }
       })();
     </script>
@@ -3629,6 +3910,64 @@
         background: #10141bcc !important;
       }
       .image-grid article button svg {
+        width: 12px;
+      }
+      .panel-note {
+        margin: 0;
+        font-size: 10px;
+        line-height: 1.55;
+        color: #97a1ad;
+      }
+      .world-card {
+        display: grid;
+        grid-template-columns: 56px 1fr;
+        gap: 8px;
+        align-items: center;
+        padding: 7px;
+        border: 1px solid #ffffff0d;
+        border-radius: 10px;
+        background: #ffffff04;
+      }
+      .world-card > img,
+      .world-card > .world-thumb {
+        display: block;
+        width: 56px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 6px;
+        background: #718faa22;
+      }
+      .world-card b {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 10px;
+      }
+      .world-card small {
+        display: block;
+        margin-top: 2px;
+        font-size: 8.5px;
+        color: #8b95a0;
+      }
+      .world-card .world-actions {
+        grid-column: 1 / -1;
+        display: flex;
+        gap: 5px;
+      }
+      .world-card .world-actions button {
+        flex: 1;
+        display: grid !important;
+        place-items: center !important;
+        height: 26px !important;
+        border: 1px solid #ffffff10 !important;
+        border-radius: 7px !important;
+        background: #ffffff05 !important;
+      }
+      .world-card .world-actions button:hover {
+        background: #ffffff0c !important;
+      }
+      .world-card .world-actions svg {
         width: 12px;
       }
       audio {
