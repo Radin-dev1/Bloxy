@@ -3741,7 +3741,7 @@
           const status = q(".status");
           if (status) status.innerHTML = "<i></i><span>Infinite Roblox canvas</span>";
           const help = q(".help");
-          if (help) help.textContent = "Orbit · Pan · Zoom · Select";
+          if (help) help.textContent = "Orbit · Pan · Zoom · Right-click to create";
           qa(".rail button").forEach((button) => {
             const label = button.querySelector("span")?.textContent?.trim() || "Tool";
             button.title = label;
@@ -3753,6 +3753,7 @@
           qa(".modebar button").forEach((button) => {
             const label = button.querySelector("span")?.textContent?.trim() || "Create tool";
             button.title = label;
+            button.classList.remove("active");
           });
           const output = q("#output"),
             log = q(".log-toggle");
@@ -4099,26 +4100,22 @@
         color: white;
       }
       .nilo-shell .status {
-        left: 78px;
-        top: 76px;
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        padding: 7px 10px;
-        border-color: #ffffff13;
+        display: none;
+      }
+      .nilo-shell .selected {
+        display: block;
+        left: 14px;
+        bottom: 14px;
+        z-index: 18;
+        padding: 7px 11px;
+        border: 1px solid #ffffff12;
         border-radius: 999px;
-        background: #11151cbd;
-        color: #aeb7c3;
-        box-shadow: 0 10px 30px #0305083d;
+        background: #11151cb8;
+        color: #8f99a7;
         backdrop-filter: blur(18px);
       }
-      .nilo-shell .status i {
-        margin: 0;
-        background: #74dea8;
-        box-shadow: 0 0 12px #74dea8;
-      }
-      .nilo-shell .status:after {
-        display: none;
+      .nilo-shell .selected b {
+        color: #e9edf4;
       }
       .nilo-shell .help {
         right: 14px;
@@ -4135,7 +4132,7 @@
         left: 50%;
         bottom: 18px;
         width: min(680px, calc(100% - 190px));
-        overflow: visible;
+        overflow: hidden;
         border: 1px solid #ffffff1a;
         border-radius: 19px;
         background: #11151cf2;
@@ -4145,19 +4142,18 @@
         backdrop-filter: blur(26px);
       }
       .nilo-shell .modebar {
-        position: absolute;
-        left: 50%;
-        bottom: calc(100% + 10px);
-        width: max-content;
-        max-width: calc(100vw - 180px);
-        padding: 5px;
-        border: 1px solid #ffffff15;
-        border-radius: 999px;
-        background: #11151ce8;
-        box-shadow: 0 16px 44px #03050852;
-        backdrop-filter: blur(22px);
-        transform: translateX(-50%);
-        overflow: auto;
+        position: static;
+        width: auto;
+        max-width: none;
+        padding: 7px 9px;
+        border: 0;
+        border-bottom: 1px solid #ffffff0d;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        backdrop-filter: none;
+        transform: none;
+        overflow-x: auto;
       }
       .nilo-shell .modebar button {
         height: 32px;
@@ -4178,14 +4174,14 @@
         width: 14px;
       }
       .nilo-shell .log-toggle {
-        margin-left: 4px !important;
+        margin-left: auto !important;
         border-left: 1px solid #ffffff12 !important;
       }
       .nilo-shell .output {
         max-height: 245px;
         padding: 14px 15px;
         border-bottom: 1px solid #ffffff10;
-        border-radius: 18px 18px 0 0;
+        border-radius: 0;
         background: #0d1118e8;
       }
       .nilo-shell .empty h1 {
@@ -4259,6 +4255,9 @@
       .nilo-shell .promptfoot .icon-btn {
         width: 32px;
         height: 30px;
+      }
+      .nilo-shell .promptfoot .icon-btn[data-create] {
+        display: none;
       }
       .nilo-shell .build-mode {
         height: 30px;
@@ -4343,7 +4342,12 @@
         transform: translate(-50%, 50%);
         transition:
           left 0.18s ease,
-          top 0.18s ease;
+          top 0.18s ease,
+          opacity 0.15s ease;
+      }
+      .world-menu:not(.open) {
+        opacity: 0;
+        pointer-events: none;
       }
       .radial-core,
       .radial-fan button {
@@ -4463,14 +4467,8 @@
         .nilo-shell .creator {
           width: min(650px, calc(100% - 156px));
         }
-        .nilo-shell .modebar {
-          max-width: calc(100vw - 118px);
-        }
         .nilo-shell .toolbar {
           top: 70px;
-        }
-        .nilo-shell .status {
-          top: 122px;
         }
         .nilo-shell .viewport-switch {
           top: 70px;
@@ -4519,10 +4517,6 @@
         .nilo-shell .creator {
           bottom: 8px;
           width: calc(100% - 16px);
-        }
-        .nilo-shell .modebar {
-          bottom: calc(100% + 60px);
-          max-width: calc(100vw - 16px);
         }
         .nilo-shell .modebar button span {
           display: none;
