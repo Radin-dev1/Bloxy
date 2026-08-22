@@ -27,6 +27,9 @@ const schema = [
   `CREATE TABLE IF NOT EXISTS wallets (id TEXT PRIMARY KEY, session_id TEXT UNIQUE NOT NULL, balance_bits INTEGER NOT NULL DEFAULT 25 CHECK(balance_bits >= 0), plan TEXT NOT NULL DEFAULT 'starter', renews_at INTEGER, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, FOREIGN KEY(session_id) REFERENCES bridge_sessions(id))`,
   `CREATE TABLE IF NOT EXISTS bit_ledger (id TEXT PRIMARY KEY, wallet_id TEXT NOT NULL, amount_bits INTEGER NOT NULL, kind TEXT NOT NULL, action TEXT NOT NULL, reference_id TEXT, created_at INTEGER NOT NULL, FOREIGN KEY(wallet_id) REFERENCES wallets(id))`,
   `CREATE INDEX IF NOT EXISTS bit_ledger_wallet_idx ON bit_ledger(wallet_id, created_at)`,
+  `CREATE TABLE IF NOT EXISTS worlds (id TEXT PRIMARY KEY, owner_user_id TEXT NOT NULL, title TEXT NOT NULL, prompt TEXT, actions_json TEXT NOT NULL, thumbnail TEXT, visibility TEXT NOT NULL DEFAULT 'private' CHECK(visibility IN ('private','public')), play_count INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, FOREIGN KEY(owner_user_id) REFERENCES users(id))`,
+  `CREATE INDEX IF NOT EXISTS worlds_owner_idx ON worlds(owner_user_id, updated_at)`,
+  `CREATE INDEX IF NOT EXISTS worlds_public_idx ON worlds(visibility, created_at)`,
 ];
 
 export async function db() {
