@@ -206,7 +206,13 @@ const providerEndpoints: Record<string, string> = {
   cerebras: "https://api.cerebras.ai/v1/chat/completions",
   github: "https://models.github.ai/inference/chat/completions",
 };
-async function askAI(system: string, prompt: string, provider: AIProvider = {}) {
+type AskOptions = { temperature?: number; maxOutputTokens?: number };
+async function askAI(
+  system: string,
+  prompt: string,
+  provider: AIProvider = {},
+  options: AskOptions = {},
+) {
   const id = provider.id || "bloxy",
     key = provider.apiKey || (env as unknown as { GEMINI_API_KEY?: string }).GEMINI_API_KEY;
   if (!key)
@@ -224,8 +230,8 @@ async function askAI(system: string, prompt: string, provider: AIProvider = {}) 
         system_instruction: { parts: [{ text: system }] },
         contents: [{ role: "user", parts: [{ text: prompt }] }],
         generationConfig: {
-          temperature: 0.15,
-          maxOutputTokens: 16384,
+          temperature: options.temperature ?? 0.15,
+          maxOutputTokens: options.maxOutputTokens ?? 16384,
           responseMimeType: "application/json",
         },
       }),
@@ -262,8 +268,8 @@ async function askAI(system: string, prompt: string, provider: AIProvider = {}) 
         { role: "system", content: system },
         { role: "user", content: prompt },
       ],
-      temperature: 0.15,
-      max_tokens: 8192,
+      temperature: options.temperature ?? 0.15,
+      max_tokens: Math.min(options.maxOutputTokens ?? 8192, 16384),
     }),
   });
   if (!response.ok) throw new Error(`AI provider request failed (${response.status})`);
@@ -323,6 +329,95 @@ function weakDraftReason(actions: BuildAction[], prompt: string) {
     issues.push("Interactive elements have no safe gameplay behavior.");
   return issues.join(" ");
 }
+type PlacedPart = { name: string; parent: string; min: number[]; max: number[]; color: string };
+function placedParts(actions: BuildAction[]): PlacedPart[] {
+  return actions
+    .filter(
+      (action) =>
+        action.type === "create_instance" &&
+        ["Part", "WedgePart", "SpawnLocation"].includes(action.className || "") &&
+        action.properties,
+    )
+    .map((action) => {
+      const position = vector(action.properties!.Position, [0, 0, 0]),
+        size = vector(action.properties!.Size, [1, 1, 1]);
+      return {
+        name: action.name,
+        parent: action.parent,
+        color: String(action.properties!.Color || ""),
+        min: position.map((value, axis) => value - Math.abs(size[axis]) / 2),
+        max: position.map((value, axis) => value + Math.abs(size[axis]) / 2),
+      };
+    });
+}
+function boxesOverlapXZ(a: PlacedPart, b: PlacedPart) {
+  return a.min[0] < b.max[0] && a.max[0] > b.min[0] && a.min[2] < b.max[2] && a.max[2] > b.min[2];
+}
+function auditGeometry(actions: BuildAction[], prompt: string) {
+  const parts = placedParts(actions),
+    issues: string[] = [];
+  const collisions: string[] = [];
+  for (let i = 0; i < parts.length; i++)
+    for (let j = i + 1; j < parts.length; j++) {
+      const a = parts[i],
+        b = parts[j];
+      if (a.parent === b.parent && a.parent !== "Workspace") continue;
+      const intersection = [0, 1, 2].reduce(
+        (volume, axis) =>
+          volume *
+          Math.max(0, Math.min(a.max[axis], b.max[axis]) - Math.max(a.min[axis], b.min[axis])),
+        1,
+      );
+      if (!intersection) continue;
+      const volumeA = [0, 1, 2].reduce((v, axis) => v * (a.max[axis] - a.min[axis]), 1),
+        volumeB = [0, 1, 2].reduce((v, axis) => v * (b.max[axis] - b.min[axis]), 1);
+      if (intersection / Math.max(1e-6, Math.min(volumeA, volumeB)) > 0.55)
+        collisions.push(`${a.name} collides with ${b.name}`);
+    }
+  if (collisions.length)
+    issues.push(
+      `Parts from separate structures overlap so heavily they read as accidents: ${collisions.slice(0, 5).join("; ")}. Reposition or resize them so structures interlock deliberately or stand apart.`,
+    );
+  if (!/\b(float|island|sky|hover|space|cloud)\b/i.test(prompt)) {
+    const floaters = parts.filter((part) => {
+      if (part.min[1] <= 4) return false;
+      const supported = parts.some(
+        (other) =>
+          other !== part &&
+          ((other.parent === part.parent && other.parent !== "Workspace") ||
+            (boxesOverlapXZ(part, other) &&
+              other.max[1] >= part.min[1] - 3 &&
+              other.max[1] <= part.min[1] + 1)),
+      );
+      return !supported;
+    });
+    if (floaters.length)
+      issues.push(
+        `These parts hang in mid-air with nothing beneath them: ${floaters
+          .slice(0, 5)
+          .map((part) => part.name)
+          .join(", ")}. Ground them, support them with visible structure, or lower them.`,
+      );
+  }
+  const colors = new Set(parts.map((part) => part.color.toUpperCase()).filter(Boolean));
+  if (colors.size > 8)
+    issues.push(
+      `The build uses ${colors.size} different colors, which reads as visual noise. Consolidate to a palette of 3-5 related colors plus one accent.`,
+    );
+  if (parts.length >= 4) {
+    const spanX =
+        Math.max(...parts.map((part) => part.max[0])) -
+        Math.min(...parts.map((part) => part.min[0])),
+      spanZ =
+        Math.max(...parts.map((part) => part.max[2])) -
+        Math.min(...parts.map((part) => part.min[2]));
+    if (Math.hypot(spanX, spanZ) > 480)
+      issues.push(
+        "Structures are scattered across an area too large to feel like one place. Pull the zones within roughly 200 studs of the origin.",
+      );
+  }
+  return issues;
+}
 function blueprintScore(actions: BuildAction[], prompt: string) {
   const wantsUI = /\b(ui|gui|hud|menu|inventory|interface)\b/i.test(prompt),
     parts = actions.filter((action) =>
@@ -341,6 +436,9 @@ function blueprintScore(actions: BuildAction[], prompt: string) {
     (actions.some((action) => action.type === "import_asset") ? 3 : 0);
   if (wantsUI) score += Math.min(ui, 18) * 2;
   if (weakDraftReason(actions, prompt)) score -= 30;
+  score -= auditGeometry(actions, prompt).length * 10;
+  score += Math.min(actions.filter((action) => action.className === "Model").length, 6) * 3;
+  score += Math.min(actions.filter((action) => action.className === "WedgePart").length, 6) * 2;
   return score;
 }
 
@@ -356,34 +454,55 @@ export async function generateBlueprint(
     "When the user requests UI, match professional Roblox game UI quality. Build a real hierarchy under StarterGui with one ScreenGui and named Frames. Use 8-24 purposeful UI instances, not one flat panel. Every GuiObject needs Position and Size as [xScale,xOffset,yScale,yOffset], AnchorPoint [x,y], BackgroundColor3 #RRGGBB, BackgroundTransparency, ZIndex, and meaningful LayoutOrder where relevant. Text objects also need Text, TextColor3 #RRGGBB, TextSize, Font (Gotham, GothamMedium, GothamBold, or GothamBlack), TextWrapped, and alignment. Add UICorner with CornerRadius [scale,offset], UIStroke with Color #RRGGBB, Thickness and Transparency, UIPadding, and UIListLayout or UIGridLayout where useful. Use scale-based responsive sizing, safe margins, one clear primary action, readable contrast, consistent spacing, restrained shadows and strokes, and a coherent hierarchy. Avoid default gray rectangles, tiny text, excessive gradients, duplicated labels, decorative clutter, and controls without clear purpose. ";
   const limitInstruction =
     "The effective blueprint limit is 128 actions, overriding any earlier lower limit when the requested quality needs more components. Prefer 24-72 purposeful actions and never add filler. ";
-  let raw = await askAI(
-    system + assetInstruction + uiInstruction + limitInstruction,
-    prompt,
-    provider,
-  );
+  const exemplar =
+    ' Study this fragment of a quality build (a lantern dock) and match its construction standard — model containers, layered parts with absolute child positions, a restrained palette, wedges for slopes: [{"id":"d1","type":"create_instance","className":"Model","name":"LanternDock","parent":"Workspace","summary":"Wooden dock with a glowing lantern"},{"id":"d2","type":"create_instance","className":"Part","name":"DockDeck","parent":"LanternDock","properties":{"Position":[0,1.4,20],"Size":[10,0.8,24],"Color":"#8A6A48","Material":"Wood","Shape":"Block","Rotation":[0,0,0],"Anchored":true},"summary":"Plank deck"},{"id":"d3","type":"create_instance","className":"Part","name":"DockPostA","parent":"LanternDock","properties":{"Position":[-4.4,0.6,10],"Size":[1,2.4,1],"Color":"#6E5238","Material":"Wood","Shape":"Block","Rotation":[0,0,0],"Anchored":true},"summary":"Support post"},{"id":"d4","type":"create_instance","className":"Part","name":"LanternPost","parent":"LanternDock","properties":{"Position":[4,4.4,30],"Size":[0.6,6,0.6],"Color":"#3A3F45","Material":"Metal","Shape":"Block","Rotation":[0,0,0],"Anchored":true},"summary":"Lantern pole at the dock end"},{"id":"d5","type":"create_instance","className":"Part","name":"LanternGlow","parent":"LanternDock","properties":{"Position":[4,7.8,30],"Size":[1.2,1.2,1.2],"Color":"#FFC24B","Material":"Neon","Shape":"Ball","Rotation":[0,0,0],"Anchored":true},"summary":"Warm glowing lantern"},{"id":"d6","type":"create_instance","className":"WedgePart","name":"DockRamp","parent":"LanternDock","properties":{"Position":[0,0.9,6],"Size":[10,1.8,4],"Color":"#8A6A48","Material":"Wood","Shape":"Wedge","Rotation":[0,180,0],"Anchored":true},"summary":"Ramp from shore onto the deck"}].';
+  const fullSystem = system + assetInstruction + uiInstruction + limitInstruction + exemplar;
+  const plannerSystem =
+    'You are Bloxy\'s lead level designer. Produce a compact JSON design plan for the requested Roblox build. JSON only, no prose. Shape: {"theme":string,"palette":["#RRGGBB",3-5 related colors],"accent":"#RRGGBB","landmark":string,"route":string describing the player path from spawn,"zones":[2-4 of {"name":string,"purpose":string,"center":[x,z],"radius":number}],"motifs":[2-3 repeated visual elements],"scripts":[{"name":string,"behavior":string}],"partBudget":number 16-90}. Zones must not overlap each other, must all sit within 200 studs of the origin, and the landmark belongs in the most prominent zone. Think like a level designer: sightlines from spawn, scale contrast, a focal point visible on approach, foreground detail near the route, purposeful negative space.';
+  let design: unknown = null;
+  try {
+    const planned = JSON.parse(
+      (await askAI(plannerSystem, prompt, provider, { temperature: 0.45, maxOutputTokens: 2048 }))
+        .trim()
+        .replace(/^```(?:json)?\s*/i, "")
+        .replace(/\s*```$/, ""),
+    );
+    if (planned && typeof planned === "object" && !Array.isArray(planned)) design = planned;
+  } catch {}
+  const buildBrief = design
+    ? `Follow this approved design plan exactly — its palette, zones, landmark, route, and part budget are decisions, not suggestions:\n${JSON.stringify(design)}\n\nUser request: ${prompt}`
+    : prompt;
+  const raw = await askAI(fullSystem, buildBrief, provider, { maxOutputTokens: 32768 });
   if (!raw) throw new Error("AI provider returned no blueprint");
   let actions = parseActions(raw);
   if (!Array.isArray(actions)) throw new Error("AI provider returned a non-array blueprint");
   if (actions.length > 128)
     throw new Error(`AI provider returned ${actions.length} actions, above the safe limit of 128`);
-  let weakness = weakDraftReason(actions, prompt);
-  for (let attempt = 0; attempt < 2 && weakness; attempt++) {
+  for (let round = 0; round < 3; round++) {
+    const normalized = normalize(actions),
+      issues = [
+        ...auditGeometry(normalized, prompt),
+        ...(weakDraftReason(normalized, prompt) ? [weakDraftReason(normalized, prompt)] : []),
+      ];
+    if (!issues.length) break;
     try {
-      raw = await askAI(
-        system + assetInstruction + uiInstruction + limitInstruction,
-        `Rebuild this weak draft. Problem: ${weakness} Preserve the request but return a complete replacement JSON array. User request: ${JSON.stringify(prompt)} Weak draft: ${JSON.stringify(actions)}`,
+      const revisedRaw = await askAI(
+        fullSystem,
+        `Revise this Roblox blueprint. Keep every structure that already works, fix every audit finding below, and return the complete replacement JSON array only.\nUser request: ${JSON.stringify(prompt)}${design ? `\nDesign plan: ${JSON.stringify(design)}` : ""}\nAudit findings (all measured from the actual coordinates — they are facts, not opinions): ${issues.join(" ")}\nCurrent draft: ${JSON.stringify(actions)}`,
         provider,
+        { maxOutputTokens: 32768 },
       );
-      const repaired = parseActions(raw);
+      const revised = parseActions(revisedRaw);
       if (
-        Array.isArray(repaired) &&
-        repaired.length <= 128 &&
-        blueprintScore(repaired, prompt) >= blueprintScore(actions, prompt)
+        Array.isArray(revised) &&
+        revised.length <= 128 &&
+        blueprintScore(normalize(revised), prompt) >= blueprintScore(normalized, prompt)
       )
-        actions = repaired;
-    } catch {}
-    weakness = weakDraftReason(actions, prompt);
+        actions = revised;
+      else break;
+    } catch {
+      break;
+    }
   }
-  const draft = normalize(actions);
-  return draft;
+  return normalize(actions);
 }

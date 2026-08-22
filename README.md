@@ -2,6 +2,8 @@
 
 Bloxy is a website-based AI Roblox game builder. The website creates a short pairing code; the user enters it in the Roblox Studio plugin; Gemini generates a declarative build blueprint; and the plugin previews every action before the user applies it.
 
+Blueprint generation runs a multi-stage pipeline (`lib/bridge.ts`, `generateBlueprint`): a design-planning pass first commits to a theme, palette, zones, landmark, and player route; a build pass then emits actions against that plan (anchored by a worked construction exemplar); and a deterministic geometry audit measures the result — heavy cross-structure overlaps, unsupported floating parts, oversized palettes, over-scattered layouts — feeding up to three AI refinement rounds until the audit passes. Revisions are only accepted when they score at least as well as the current draft.
+
 The deployed GitHub Pages website is the standalone marketing page in `landing/index.html`. It uses plain HTML, CSS, and JavaScript with no build step. `.github/workflows/pages.yml` publishes that folder as the live Bloxy website on every relevant push.
 
 ## Safety and cost controls
